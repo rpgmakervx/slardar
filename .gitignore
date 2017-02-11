@@ -1,7 +1,8 @@
 # Created by .ignore support plugin (hsz.mobi)
 ### Java template
 *.class
-
+.idea
+*.iml
 # Log file
 *.log
 
@@ -22,3 +23,9 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
+将删除 .gitignore
+将删除 .idea/
+将删除 pom.xml
+将删除 slardar.iml
+将删除 src/
+将删除 target/
