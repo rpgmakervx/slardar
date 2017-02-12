@@ -10,6 +10,19 @@ ctx.namespace = "org.easyarch.test.dao.UserMapper";
 function findById(params){
     return "select * from user where client_id = $id$";
 }
+function getCount(params){
+    var sql = "select count(1) from user" + ctx.where;
+    if (params.clientId != undefined){
+        sql += " and client_id = $clientId$";
+    }
+    if (params.userName != undefined){
+        sql += " and username = $userName$";
+    }
+    if (params.phone != undefined){
+        sql += " and phone = $phone$";
+    }
+    return sql;
+}
 
 function findByUser(params) {
     var sql = "select * from user" + ctx.where;
@@ -38,6 +51,7 @@ function update(params){
     if(params.password != undefined){
         sql += " , password = $password$"
     }
+    sql += ctx.where + " and client_id = $clientId$";
     return sql;
 }
 

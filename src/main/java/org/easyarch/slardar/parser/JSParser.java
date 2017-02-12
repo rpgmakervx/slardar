@@ -29,8 +29,6 @@ public class JSParser extends ParserAdapter<SqlEntity> {
 
     private ScriptEngineManager engineManager ;
 
-    private ScriptEngine engine;
-
     private SqlBuilder sqlBuilder;
 
     private Reader reader;
@@ -40,11 +38,10 @@ public class JSParser extends ParserAdapter<SqlEntity> {
     private Configuration configuration;
 
     private static Map<String,SqlEntity> sqlValues = new HashMap<>();
-    private static Map<String,Invocable> jsFunctions = new HashMap<>();
+    private static Map<String,ScriptEngine> jsFunctions = new HashMap<>();
 
     public JSParser(Reader reader,Configuration configuration){
         engineManager = new ScriptEngineManager();
-        engine = engineManager.getEngineByName(JAVASCRIPT);
         this.sqlBuilder = new SqlBuilder();
         this.configuration = configuration;
         this.reader = reader;
@@ -54,22 +51,24 @@ public class JSParser extends ParserAdapter<SqlEntity> {
     @Override
     public void parse(SqlEntity entity) {
         try {
-            Invocable func = jsFunctions.get(entity.getPrefix());
+            ScriptEngine engine = jsFunctions.get(entity.getPrefix());
             String namespace = null;
-            System.out.println("suffix:"+entity.getSuffix());
-            if (func == null){
+            if (engine == null){
+                engine = engineManager.getEngineByName(JAVASCRIPT);
                 engine.put(JSContext.CONTEXT,ctx.getCtx());
                 engine.eval(reader);
-                func = (Invocable)engine;
                 namespace = String.valueOf(((Map<String,Object>)engine.get(CONTEXT)).get(NAMESPACE));
                 if (StringUtils.isEmpty(namespace)){
                     return;
                 }
-                jsFunctions.put(entity.getPrefix(),func);
+                jsFunctions.put(entity.getPrefix(),engine);
+            }else{
+                namespace = String.valueOf(((Map<String,Object>)engine.get(CONTEXT)).get(NAMESPACE));
             }
             if (!entity.getPrefix().equals(namespace)){
                 return ;
             }
+            Invocable func = (Invocable) engine;
             Map<String,Object> params = entity.getFlatParams();
             String sql = (String) func.invokeFunction(entity.getSuffix(),params);
             configuration.addMappedSql(namespace,entity.getSuffix(),sql);

@@ -18,6 +18,7 @@ public interface UserMapper {
 
     public List<User> findByUser(User user);
 
+    public int getCount(User user);
     public int insert(User user);
 
     public void update(User user);

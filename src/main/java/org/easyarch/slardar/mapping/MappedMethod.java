@@ -79,25 +79,25 @@ public class MappedMethod {
             cache.addSqlEntity(se);
         }
         System.out.println("sql param goto:"+builder.getParameters());
+        Object []param = CollectionUtils.gatherMapListsValues(builder.getParameters());
         switch (builder.getType()){
             case SELECT:
                 Class<?> returnType = ReflectUtils.getReturnType(method);
                 if (Collection.class.isAssignableFrom(returnType)){
                     return session.selectList(builder.getPreparedSql(),
-                            ReflectUtils.getGenericReturnType(method),
-                            CollectionUtils.gatherMapListsValues(builder.getParameters()));
+                            ReflectUtils.getGenericReturnType(method),param);
                 }else{
-                    return session.selectOne(builder.getPreparedSql(),
-                            returnType, CollectionUtils.gatherMapListsValues(builder.getParameters()));
+                    //查询操作并且返回基本类型的情况，默认是count类型的查询
+                    if (ReflectUtils.isBaseType(returnType)){
+                        return session.selectCount(builder.getPreparedSql(), param);
+                    }
+                    return session.selectOne(builder.getPreparedSql(), returnType,param);
                 }
             case INSERT:
                 System.out.println("go to insert params:"+builder.getParameters());
-                return session.insert(builder.getPreparedSql(),
-                    CollectionUtils.gatherMapListsValues(builder.getParameters()));
-            case UPDATE:return session.update(builder.getPreparedSql(),
-                    CollectionUtils.gatherMapListsValues(builder.getParameters()));
-            case DELETE:return session.delete(builder.getPreparedSql(),
-                    CollectionUtils.gatherMapListsValues(builder.getParameters()));
+                return session.insert(builder.getPreparedSql(),param);
+            case UPDATE:return session.update(builder.getPreparedSql(),param);
+            case DELETE:return session.delete(builder.getPreparedSql(),param);
         }
         return null;
     }

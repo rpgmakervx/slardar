@@ -38,9 +38,8 @@ public abstract class AbstractExecutor {
             int count = meta.getParameterCount();
             if (params == null||meta == null||count == 0)
                 return;
-            System.out.println("paramLength:"+paramLength+" ,count:"+count);
             if (paramLength != count) {
-                throw new IllegalArgumentException("your param not match query string's param");
+                throw new IllegalArgumentException("param length is "+paramLength+",but query string has "+count);
             }
             for (int index = 0; index < paramLength; index++) {
                 if (params[index] == null) {

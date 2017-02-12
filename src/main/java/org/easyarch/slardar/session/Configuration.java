@@ -224,6 +224,7 @@ public class Configuration {
     private boolean containsSql(String namespace,String id){
         Map<String,String> mapper = mappedSqls.get(namespace);
         if (mapper == null){
+
             return false;
         }
         return mapper.containsKey(id);

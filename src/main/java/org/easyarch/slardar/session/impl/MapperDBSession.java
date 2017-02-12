@@ -3,6 +3,7 @@ package org.easyarch.slardar.session.impl;
 import org.easyarch.slardar.cache.CacheFactory;
 import org.easyarch.slardar.cache.ProxyCache;
 import org.easyarch.slardar.jdbc.exec.SqlExecutor;
+import org.easyarch.slardar.jdbc.handler.BaseTypeResultSetHandler;
 import org.easyarch.slardar.jdbc.handler.BeanListResultSetHadler;
 import org.easyarch.slardar.jdbc.handler.BeanResultSetHadler;
 import org.easyarch.slardar.jdbc.handler.MapResultHandler;
@@ -35,7 +36,7 @@ public class MapperDBSession extends DBSessionAdapter {
 
     @Override
     public <T> T selectOne(String sql, Class<T> clazz, Object... parameters) {
-        return executor.query(sql, new BeanResultSetHadler<>(clazz), parameters);
+        return executor.query(sql,new BeanResultSetHadler<T>(clazz),parameters);
     }
 
     @Override
@@ -45,8 +46,8 @@ public class MapperDBSession extends DBSessionAdapter {
     }
 
     @Override
-    public int selectCount(String bind, Object... parameters) {
-        return super.selectCount(bind, parameters);
+    public int selectCount(String sql, Object... parameters) {
+        return executor.query(sql, new BaseTypeResultSetHandler<>(Integer.class), parameters);
     }
 
     @Override

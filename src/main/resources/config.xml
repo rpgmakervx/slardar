@@ -4,5 +4,5 @@
 
     <mapper location="classpath:mapper/" />
 
-    <datasource location="classpath:db.properties" class="com.alibaba.druid.pool.DruidDataSource"/>
+    <datasource location="classpath:db.properties" class=""/>
 </jade>

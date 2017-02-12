@@ -18,9 +18,9 @@ import java.sql.ResultSet;
 
 public class BeanResultSetHadler<T> implements ResultSetHandler<T> {
 
-    private Wrapper<T> wrapper;
+    protected Wrapper<T> wrapper;
 
-    private Class<T> type;
+    protected Class<T> type;
 
     public BeanResultSetHadler(Class<T> type) {
         this(new BeanWrapper<T>(new FieldBinder(type)),type);

@@ -6,7 +6,7 @@ package org.easyarch.slardar.jdbc.exec;/**
 
 import org.easyarch.slardar.jdbc.cfg.ConnConfig;
 import org.easyarch.slardar.jdbc.cfg.PoolConfig;
-import org.easyarch.slardar.jdbc.handler.IntegerResultSetHandler;
+import org.easyarch.slardar.jdbc.handler.BaseTypeResultSetHandler;
 import org.easyarch.slardar.jdbc.handler.ResultSetHandler;
 import org.easyarch.slardar.jdbc.pool.DBCPoolFactory;
 
@@ -115,8 +115,8 @@ public class SqlExecutor extends AbstractExecutor{
         DataSource dataSource = DBCPoolFactory.newCustomDBCPool(PoolConfig.config(200, 50, 5, 3 * 1000L));
         final SqlExecutor executor = new MySqlExecutor(dataSource.getConnection());
         System.out.println(executor);
-        ResultSetHandler<Integer> handler = new IntegerResultSetHandler();
-        Integer count = executor.query("select count(1) from user ", handler, null);
+        ResultSetHandler<Integer> handler = new BaseTypeResultSetHandler(Integer.class);
+        Integer count = executor.query("select count(1) from user where username = ?", handler, new Object[]{"code4j"});
         System.out.println(count);
 //        int result = executor.alter(connection,"insert into user values(?,?,?,?,?)",10,"laisbfdsfk","583110127","13652212569",30);
 //        System.out.println("end "+result);

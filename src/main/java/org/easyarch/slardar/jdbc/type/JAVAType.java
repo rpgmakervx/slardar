@@ -32,4 +32,12 @@ public enum JAVAType {
         this.base = base;
     }
 
+    public static JAVAType getType(Class cls){
+        for (JAVAType type:values()){
+            if (type.base.equals(cls)||type.obj.equals(cls)){
+                return type;
+            }
+        }
+        throw new IllegalArgumentException("there is no type named "+cls.getTypeName()+" here");
+    }
 }

@@ -7,7 +7,7 @@ import org.easyarch.slardar.entity.Parameter;
 import org.easyarch.slardar.entity.SqlEntity;
 import org.easyarch.slardar.jdbc.exec.SqlExecutor;
 import org.easyarch.slardar.jdbc.handler.BeanListResultSetHadler;
-import org.easyarch.slardar.jdbc.handler.IntegerResultSetHandler;
+import org.easyarch.slardar.jdbc.handler.BaseTypeResultSetHandler;
 import org.easyarch.slardar.jdbc.handler.MapResultHandler;
 import org.easyarch.slardar.session.Configuration;
 import org.easyarch.slardar.session.DBSessionAdapter;
@@ -91,7 +91,7 @@ public class DefaultDBSession extends DBSessionAdapter {
     public int selectCount(String bind, Object... parameters) {
         SqlEntity entity = genEntity(bind,parameters);
         Integer count = executor.query(entity.getPreparedSql(),
-                new IntegerResultSetHandler(),
+                new BaseTypeResultSetHandler<>(Integer.class),
                 CollectionUtils.gatherMapListsValues(entity.getParams()));
         return count;
     }
@@ -101,7 +101,7 @@ public class DefaultDBSession extends DBSessionAdapter {
         Object[] params = CollectionUtils.gatherMapListsValues(parameters);
         SqlEntity entity = genEntity(bind,params);
         Integer count = executor.query(entity.getPreparedSql(),
-                new IntegerResultSetHandler(),params);
+                new BaseTypeResultSetHandler<>(Integer.class),params);
         return count;
     }
 
@@ -165,7 +165,7 @@ public class DefaultDBSession extends DBSessionAdapter {
             SqlEntity entity = cache.getSqlEntity(interfaceName,methodName);
             builder.buildEntity(entity);
         }else{
-            for (int index=0;index>parameters.length;index++){
+            for (int index=0;index<parameters.length;index++){
                 Parameter param = (Parameter) parameters[index];
                 builder.buildParams(param.getValue(),param.getName());
             }
