@@ -58,47 +58,6 @@ public class CollectionUtils {
         return col.toArray((T[]) Array.newInstance(clazz,col.size()));
     }
 
-    public static <T> Map<T, Integer> wordcount(final Collection<T> col) {
-        return countFrequency(col);
-    }
-
-
-    public static<T> Collection<T> subtract(final Collection<T> a,final Collection<T> b){
-        Set<T> set = new HashSet<T>();
-        ArrayList<T> result = new ArrayList<T>();
-        set.addAll(a);
-        Map<T, Integer> aMap = countFrequency(a);
-        Map<T, Integer> bMap = countFrequency(b);
-        for (T bean : set) {
-            int loopSize = aMap.get(bean) - bMap.get(bean);
-            for (int index = 0; index < loopSize; index++) {
-                result.add(bean);
-            }
-        }
-        return result;
-    }
-
-    private static <T> int getFrequency(final T bean, Map<T, Integer> map) {
-        Integer frequency = map.get(bean);
-        if (frequency == null) {
-            return 0;
-        }
-        return frequency.intValue();
-    }
-
-    private static <T> Map<T, Integer> countFrequency(final Collection<T> col) {
-        Map<T, Integer> resultMap = new TreeMap<T, Integer>();
-        for (T bean : col) {
-            Integer count = resultMap.get(bean);
-            if (count == null) {
-                resultMap.put(bean, 1);
-            } else {
-                resultMap.put(bean, count.intValue() + 1);
-            }
-        }
-        return resultMap;
-    }
-
     /**
      * 聚合操作，给maplist降低维度到统一的map中
      * @param mapList
@@ -142,12 +101,4 @@ public class CollectionUtils {
         return valueList.toArray();
     }
 
-    public static void main(String[] args) {
-//        List<String> words = newArrayList("this", "is", "a", "file", "and", "that", "is", "a", "file");
-        List<Integer> a = newArrayList(1,2,2,3,3,4,5,5);
-        List<Integer> b = newArrayList(1,1,2,3,4,4,4,5);
-//        System.out.println(Lists.partition(a,5));;
-//        System.out.println(union(a,b));
-        System.out.println(subtract(a,b));;
-    }
 }

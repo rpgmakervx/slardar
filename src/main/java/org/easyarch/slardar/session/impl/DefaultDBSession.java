@@ -1,5 +1,6 @@
 package org.easyarch.slardar.session.impl;
 
+import org.easyarch.slardar.build.SqlBuilder;
 import org.easyarch.slardar.cache.CacheFactory;
 import org.easyarch.slardar.cache.SqlMapCache;
 import org.easyarch.slardar.entity.SqlEntity;
@@ -47,11 +48,30 @@ public class DefaultDBSession extends DBSessionAdapter {
     @Override
     public <E> List<E> selectList(String bind, Class<E> clazz, Object... parameters) {
         String[] tokens = bind.split(BIND_SEPARATOR);
-//        SqlEntity entity = cache.getSqlEntity();
+        String interfaceName = tokens[0];
+        String methodName = tokens[1];
+        SqlBuilder builder = new SqlBuilder();
+        SqlMapCache cache = factory.getSqlMapCache();
+
+        if (cache.isHit(interfaceName,methodName)) {
+            SqlEntity entity = cache.getSqlEntity(interfaceName,methodName);
+            builder.buildEntity(entity);
+        }else{
+
+        }
+
+
+
+
+
+
+
+
+
+
+
         SqlEntity entity = new SqlEntity();
         entity.setBinder(bind);
-//        entity.setParamNames();
-//        configuration.parseMappedSql();
         String sql = configuration.getMappedSql(tokens[0], tokens[1]);
         List<E> list = executor.query(sql, new BeanListResultSetHadler<>(clazz), parameters);
         return list;

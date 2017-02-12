@@ -5,7 +5,6 @@ import org.easyarch.slardar.cache.CacheFactory;
 import org.easyarch.slardar.cache.InterfaceCache;
 import org.easyarch.slardar.utils.FileUtils;
 import org.easyarch.slardar.utils.ResourcesUtil;
-import org.easyarch.slardar.utils.StringUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -57,6 +56,7 @@ public class MapperScanner {
 
     /**
      * 路径扫描，目前不支持通配符*扫描
+     * 系统启动后只加载一次
      * @param packagePath  包名，空字符或单个*符号代表当前工程下所有包
      * @throws Exception
      */
@@ -69,7 +69,7 @@ public class MapperScanner {
             return;
         }
 
-        if (StringUtils.isBlank(packagePath)||ANY.equals(packagePath)){
+        if (ANY.equals(packagePath)){
             scan();
             return;
         }

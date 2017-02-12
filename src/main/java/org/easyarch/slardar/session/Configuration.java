@@ -56,6 +56,7 @@ public class Configuration {
 
     /**
      * 从配置文件路径读取mapper配置文件信息（注意只能是精确到目录不能是文件）
+     * mapper未配置时，不加载该配置
      * 支持配置路径如下：
      * 1.classpath:mapper/                              (走classpath)
      * 2./opt/web/webapp/admin/WEB-INF/classes/mapper/  (走绝对路径)
@@ -65,8 +66,10 @@ public class Configuration {
      */
     private void initMapper(){
         try {
-            Map<String,Object> mapper = configMap.get(MAPPER);
-            String basePath = String.valueOf(mapper.get(LOCATION));
+            String basePath = getMapperLocation();
+            if (StringUtils.isEmpty(basePath)){
+                return;
+            }
             File baseDir = new File(basePath);
             if (basePath.startsWith(CLASSPATH)){
                 //去掉classpath:关键字
@@ -166,8 +169,10 @@ public class Configuration {
 
     public String getMapperLocation(){
         Map<String,Object> mapper = configMap.get(MAPPER);
-        String mapperLocation = String.valueOf(mapper.get(LOCATION));
-        return mapperLocation;
+        if (mapper == null){
+            return null;
+        }
+        return String.valueOf(mapper.get(LOCATION));
     }
 
     public List<Reader> getSqlMapperReaders(){

@@ -28,6 +28,14 @@ public class MapperProxy<T> implements InvocationHandler {
         this.interfaceClass = interfaceClass;
     }
 
+    /**
+     * 先从缓存中获取代理对象，不存在则生成代理对象并添加到缓存
+     * @param proxy
+     * @param method
+     * @param args
+     * @return
+     * @throws Throwable
+     */
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         MappedMethod mappedMethod = new MappedMethod(session);
