@@ -49,8 +49,7 @@ public class MappedMethod {
         }else{
             System.out.println("sqlBuilder didnt hit the cache");
             Parameter[] parameters = method.getParameters();
-            String[] paramNames = ReflectUtils.getMethodParameter(method);
-            int paramIndex = 0;
+//            String[] paramNames = ReflectUtils.getMethodParameter(method);
             for (int index=0;index<parameters.length;index++) {
                 if (args[index] instanceof Map) {
                     builder.buildParams((Map<String,Object>)args[index]);
@@ -60,7 +59,6 @@ public class MappedMethod {
                     SqlParam sqlParam = parameters[index].getAnnotation(SqlParam.class);
                     if (sqlParam == null) {
                         builder.buildParams(args[index]);
-                        paramIndex++;
                     }else{
                         builder.buildParams(args[index],sqlParam.name());
                     }

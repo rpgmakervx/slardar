@@ -17,7 +17,17 @@ public class DBSessionAdapter implements DBSession {
     }
 
     @Override
+    public <T> T selectOne(String bindOrSql, Class<T> clazz, Map<String, Object> parameter) {
+        return null;
+    }
+
+    @Override
     public <E> List<E> selectList(String bindOrSql, Class<E> clazz, Object... parameter) {
+        return null;
+    }
+
+    @Override
+    public <E> List<E> selectList(String bindOrSql, Class<E> clazz, Map<String, Object> parameter) {
         return null;
     }
 
@@ -27,7 +37,17 @@ public class DBSessionAdapter implements DBSession {
     }
 
     @Override
+    public int selectCount(String bindOrSql, Map<String, Object> parameters) {
+        return 0;
+    }
+
+    @Override
     public List<Map<String, Object>> selectMap(String bindOrSql, Object... parameters) {
+        return null;
+    }
+
+    @Override
+    public List<Map<String, Object>> selectMap(String bindOrSql, Map<String, Object> parameters) {
         return null;
     }
 
@@ -37,12 +57,27 @@ public class DBSessionAdapter implements DBSession {
     }
 
     @Override
+    public int update(String bindOrSql, Map<String, Object> parameter) {
+        return 0;
+    }
+
+    @Override
     public int delete(String bindOrSql, Object... parameter) {
         return 0;
     }
 
     @Override
+    public int delete(String bindOrSql, Map<String, Object> parameter) {
+        return 0;
+    }
+
+    @Override
     public int insert(String bindOrSql, Object... parameter) {
+        return 0;
+    }
+
+    @Override
+    public int insert(String bindOrSql, Map<String, Object> parameter) {
         return 0;
     }
 

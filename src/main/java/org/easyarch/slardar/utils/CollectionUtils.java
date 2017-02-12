@@ -100,5 +100,17 @@ public class CollectionUtils {
         }
         return valueList.toArray();
     }
+    /**
+     * 统计maplist的值，返回数组
+     * @param map
+     * @return
+     */
+    public static Object[] gatherMapListsValues(Map<String,Object> map){
+        List valueList = new ArrayList();
+        for (Map.Entry<String,Object> entry:map.entrySet()){
+            valueList.add(entry.getValue());
+        }
+        return valueList.toArray();
+    }
 
 }

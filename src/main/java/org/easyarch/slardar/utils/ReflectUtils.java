@@ -9,6 +9,7 @@ import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.lang.reflect.*;
 import java.lang.reflect.Type;
+import java.util.Collection;
 
 /**
  * Description :
@@ -262,6 +263,36 @@ public class ReflectUtils {
      */
     public static boolean isFrequentlyUseType(Class clz){
         return isBaseType(clz)||clz.equals(String.class);
+    }
+
+    /**
+     * 判断集合是否是统一的类型
+     * @param col
+     * @param cls
+     * @return
+     */
+    public static boolean isUnifiedCollection(Collection col,Class<?> cls){
+        for (Object obj:col){
+            if (!obj.getClass().equals(cls)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 判断数组是否是统一的类型
+     * @param col
+     * @param cls
+     * @return
+     */
+    public static boolean isUnifiedCollection(Object[] col,Class<?> cls){
+        for (Object obj:col){
+            if (!obj.getClass().equals(cls)){
+                return false;
+            }
+        }
+        return true;
     }
 
 }

@@ -42,7 +42,7 @@ public class SqlBuilder {
         return this;
     }
 
-    public SqlBuilder buildParams(Object object, String name){
+    public SqlBuilder buildParams(Object object,String name ){
         paramBinder.reflect(object,name);
         return this;
     }

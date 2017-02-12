@@ -4,9 +4,13 @@ package org.easyarch.slardar.jdbc.exec;/**
  *  上午11:11
  */
 
+import org.easyarch.slardar.jdbc.cfg.ConnConfig;
+import org.easyarch.slardar.jdbc.cfg.PoolConfig;
+import org.easyarch.slardar.jdbc.handler.IntegerResultSetHandler;
 import org.easyarch.slardar.jdbc.handler.ResultSetHandler;
-import org.easyarch.slardar.utils.ReflectUtils;
+import org.easyarch.slardar.jdbc.pool.DBCPoolFactory;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -106,17 +110,14 @@ public class SqlExecutor extends AbstractExecutor{
 
 
     public static void main(String[] args) throws SQLException {
-//        ConnConfig.config("root", "123456",
-//                "jdbc:mysql://localhost:3306/database?useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=false", "com.mysql.jdbc.Driver");
-//        ;
-//        DataSource dataSource = DBCPoolFactory.newConfigedDBCPool(PoolConfig.config(200, 50, 5, 3 * 1000L).getProperties());
-//        final SqlExecutor executor = new MySqlExecutor(dataSource.getConnection());
-//        Connection connection = dataSource.getConnection();
-//        PreparedStatement ps = connection.prepareStatement("");
-//        int count = executor.query("select count(1) from user ",
-//                new BeanResultSetHadler<Integer>(Integer.class), null);
-//        System.out.println(count);
-        System.out.println(ReflectUtils.newInstance(Integer.class));
+        ConnConfig.config("root", "123456",
+                "jdbc:mysql://localhost:3306/shopping?useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=false", "com.mysql.jdbc.Driver");
+        DataSource dataSource = DBCPoolFactory.newCustomDBCPool(PoolConfig.config(200, 50, 5, 3 * 1000L));
+        final SqlExecutor executor = new MySqlExecutor(dataSource.getConnection());
+        System.out.println(executor);
+        ResultSetHandler<Integer> handler = new IntegerResultSetHandler();
+        Integer count = executor.query("select count(1) from user ", handler, null);
+        System.out.println(count);
 //        int result = executor.alter(connection,"insert into user values(?,?,?,?,?)",10,"laisbfdsfk","583110127","13652212569",30);
 //        System.out.println("end "+result);
     }
