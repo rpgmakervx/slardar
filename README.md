@@ -121,15 +121,15 @@ public class UserService {
  Finally make some configurations:
  First make some configuration to init db,create **resources/db.properties**:
   ```properties
-     username = *****
-     password = *****
-     url = jdbc:mysql://localhost:3306/testdb?useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=false
-     driverClassName = com.mysql.jdbc.Driver
-     
-     maxActive =200
-     minIdle = 10
-     initialSize = 50
-     maxWait = 6000
+ username = *****
+ password = *****
+ url = jdbc:mysql://localhost:3306/testdb?useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=false
+ driverClassName = com.mysql.jdbc.Driver
+ 
+ maxActive =200
+ minIdle = 10
+ initialSize = 50
+ maxWait = 6000
   ```
   and **resources/config.xml**
   ```xml
@@ -143,19 +143,19 @@ public class UserService {
   ```
   write your sql in **resources/mapper/usermapper.java**
   ```javascript
-    ctx.namespace = "org.easyarch.test.dao.UserMapper";
-    
-    function findById(params){
-        return "select * from t_user where client_id = $id$";
-    }
+ctx.namespace = "org.easyarch.test.dao.UserMapper";
+
+function findById(params){
+    return "select * from t_user where client_id = $id$";
+}
   ```
   
   Write a main function to test it:
   ```java
-    public class Main{
-        public static void main(String[] args){
-            UserService service = new UserService();
-            System.out.println(service.getUser("123456"));
-        }
+public class Main{
+    public static void main(String[] args){
+        UserService service = new UserService();
+        System.out.println(service.getUser("123456"));
     }
+}
   ```
