@@ -107,7 +107,6 @@ public class UserService {
             DBSessionFactory sessionFactory = new DBSessionFactoryBuilder().build(
                     ResourcesUtil.getResourceAsStream("/config.xml"));
             session = sessionFactory.newDelegateSession();
-            defaultSession = sessionFactory.newDefaultSession();
             mapper = session.getMapper(UserMapper.class);
         } catch (Exception e) {
             e.printStackTrace();
