@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
-<configuration>
+<jade>
     <interface package="org.easyarch.test.dao" />
 
     <mapper location="classpath:mapper/" />
 
     <datasource location="classpath:db.properties" class=""/>
-</configuration>
+</jade>

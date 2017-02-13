@@ -51,13 +51,4 @@ public class User {
         this.phone = phone == null ? null : phone.trim();
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "clientId='" + clientId + '\'' +
-                ", userName='" + userName + '\'' +
-                ", password='" + password + '\'' +
-                ", phone='" + phone + '\'' +
-                '}';
-    }
 }
