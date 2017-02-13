@@ -153,7 +153,7 @@ public class UserService {
     }
   ```
   
-  Write a main function:
+  Write a main function to test it:
   ```java
     public class Main{
         public static void main(String[] args){
@@ -162,5 +162,3 @@ public class UserService {
         }
     }
   ```
-  
-  You can see your data now!
