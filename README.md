@@ -102,8 +102,6 @@ public class UserService {
     private UserMapper mapper;
 
     private DBSession session;
-    private DBSession defaultSession;
-
     public UserService(){
         try {
             DBSessionFactory sessionFactory = new DBSessionFactoryBuilder().build(
