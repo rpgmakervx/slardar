@@ -1,6 +1,6 @@
 Slardar Sql Mapper Framework for Java
 =====================================
-![mybatis](https://github.com/rpgmakervx/slardar/blob/master/doc/image/slardar-logo.png)
+![slardar](https://github.com/rpgmakervx/slardar/blob/master/doc/image/slardar-logo.png)
 
 Slardar is a frame of data persistence layer,whitch features are similar to **mybatis** , **hibernate** etc...
 Slardar use **javascript** to build dynamic sql,whitch is easier for some one who familiar with **javascript**.
@@ -91,6 +91,7 @@ import java.util.List;
 public interface UserMapper {
 
     public User findById(@SqlParam(name = "id") String id);
+    public List<User> findByUser(User user);
 
 }
  ```
@@ -115,6 +116,9 @@ public class UserService {
 
     public User getUser(String id){
         return mapper.findById(id);
+    }
+    public List<User> getUsers(User user){
+        return mapper.findByUser(user);
     }
 }
  ```
@@ -148,6 +152,19 @@ ctx.namespace = "org.easyarch.test.dao.UserMapper";
 function findById(params){
     return "select * from t_user where client_id = $id$";
 }
+function findByUser(params) {
+    var sql = "select * from user" + ctx.where;
+    if (params.userName != undefined){
+        sql += " and username = $userName$";
+    }
+    if (params.phone != undefined){
+        sql += " and phone = $phone$";
+    }
+    if (params.client_id != undefined){
+        sql += " and client_id = $clientId$";
+    }
+    return sql;
+}
   ```
   
   Write a main function to test it:
@@ -156,6 +173,13 @@ public class Main{
     public static void main(String[] args){
         UserService service = new UserService();
         System.out.println(service.getUser("123456"));
+        
+        User user = new User();
+        user.setUserName("code4j");
+        user.setPhone("13600000000");
+        System.out.println(service.getUsers(user));
     }
 }
   ```
+  
+  more infomation in Chinese go to:
