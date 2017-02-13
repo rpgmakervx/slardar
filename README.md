@@ -1,6 +1,6 @@
 Slardar Sql Mapper Framework for Java
 =====================================
-![mybatis](https://github.com/rpgmakervx/slardar/tree/master/doc/image/slardar-logo.png)
+![mybatis](https://github.com/rpgmakervx/slardar/blob/master/doc/image/slardar-logo.png)
 
 slardar is a frame of data persistence layer,similar to **mybatis** , **hibernate** etc...
 ## Features:
