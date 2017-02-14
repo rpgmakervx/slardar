@@ -15,10 +15,8 @@ public class SessionController {
     public static void main(String[] args) {
         UserService service = new UserService();
         User user = new User();
-        user.setClientId("#########");
-        user.setPassword(".......");
-        user.setPhone("1360000000");
+//        user.setPhone("1360000000");
         user.setUserName("code4j");
-        service.insertUser(user);
+        System.out.println(service.getUsers(user));;
     }
 }

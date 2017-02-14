@@ -1,5 +1,7 @@
 package org.easyarch.slardar.cache;
 
+import org.easyarch.slardar.cache.mode.LRUCache;
+
 /**
  * Description :
  * Created by xingtianyu on 17-1-25
@@ -30,21 +32,21 @@ public class CacheFactory {
 
     public SqlMapCache getSqlMapCache(){
         if (sqlMapCache == null){
-            sqlMapCache = new SqlMapCache();
+            sqlMapCache = new SqlMapCache(new LRUCache<>(128));
         }
         return sqlMapCache;
     }
 
     public InterfaceCache getInterfaceCache(){
         if (interfaceCache == null){
-            interfaceCache = new InterfaceCache();
+            interfaceCache = new InterfaceCache(new LRUCache<>(128));
         }
         return interfaceCache;
     }
 
     public ProxyCache getProxyCache(){
         if (proxyCache == null){
-            proxyCache = new ProxyCache();
+            proxyCache = new ProxyCache(new LRUCache<>(128));
         }
         return proxyCache;
     }

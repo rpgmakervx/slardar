@@ -27,7 +27,10 @@ function getCount(params){
 function findByUser(params) {
     var sql = "select * from user" + ctx.where;
     if (params.clientId != undefined){
-        sql += " and client_id = $clientId$";
+        sql += " and client_id = $clientId$"
+    }
+    if (params.userName != undefined){
+        sql += " and username = $userName$";
     }
     if (params.phone != undefined){
         sql += " and phone = $phone$";

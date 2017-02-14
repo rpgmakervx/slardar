@@ -14,28 +14,34 @@ public class ProxyCache implements Cache<Class,Object> {
 
     private volatile Map<Class,Object> proxyMap = new ConcurrentHashMap<>();
 
+    private volatile Cache<Class,Object> cache;
+
+    public ProxyCache(Cache<Class, Object> cache) {
+        this.cache = cache;
+    }
+
     @Override
     public Object get(Class key) {
-        return proxyMap.get(key);
+        return cache.get(key);
     }
 
     @Override
     public void set(Class key, Object value) {
-        proxyMap.put(key,value);
+        cache.set(key,value);
     }
 
     @Override
     public Object remove(Class key) {
-        return proxyMap.remove(key);
+        return cache.remove(key);
     }
 
     @Override
     public boolean isHit(Class key) {
-        return proxyMap.containsKey(key);
+        return cache.isHit(key);
     }
 
     @Override
     public void clear() {
-        proxyMap.clear();
+        cache.clear();
     }
 }

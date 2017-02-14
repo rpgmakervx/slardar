@@ -4,7 +4,7 @@ import org.easyarch.slardar.annotation.entity.Column;
 import org.easyarch.slardar.annotation.entity.Table;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +20,7 @@ public class ParamBinder {
     private Map<String,Object> reflectMap;
 
     public ParamBinder(){
-        reflectMap = new HashMap<>();
+        reflectMap = new LinkedHashMap<>();
     }
 
     public Map<String,Object> reflect(List obj, List<String> name){

@@ -68,13 +68,13 @@ public class MappedMethod {
             }
             //先构造参数，根据参数获得动态sql,然后缓存
             SqlEntity entity = new SqlEntity();
-            entity.setParams(CollectionUtils.flatMapLists(builder.getMapperParameters()));
+            entity.setParams(builder.getParameters());
             entity.setBinder(interfaceName + BIND_SEPARATOR + method.getName());
             configuration.parseMappedSql(entity);
             String sql = configuration.getMappedSql(interfaceName, method.getName());
             //jsqlparser 在这一步，相对其他代码会慢一点
             builder.buildSql(sql);
-            builder.prepareParams();
+            builder.buildParams();
             SqlEntity se = builder.buildEntity(interfaceName + BIND_SEPARATOR + method.getName());
             cache.addSqlEntity(se);
         }

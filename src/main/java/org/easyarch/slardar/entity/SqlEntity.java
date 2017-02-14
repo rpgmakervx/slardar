@@ -2,10 +2,7 @@ package org.easyarch.slardar.entity;
 
 import org.easyarch.slardar.mapping.SqlType;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.easyarch.slardar.parser.Token.BIND_SEPARATOR;
 
@@ -22,7 +19,7 @@ public class SqlEntity {
 
     private String preparedSql;
 
-    private List<Map<String, Object>> params;
+    private Map<String, Object> params;
 
     private SqlType type;
 
@@ -30,19 +27,7 @@ public class SqlEntity {
     private String binder;
 
     public SqlEntity() {
-        params = new ArrayList<>();
-    }
-
-    public List<Map<String, Object>> getParams() {
-        return params;
-    }
-
-    public Map<String, Object> getFlatParams() {
-        Map<String, Object> flatParams = new HashMap<>();
-        for (Map<String, Object> flatMap : params) {
-            flatParams.putAll(flatMap);
-        }
-        return flatParams;
+        params = new LinkedHashMap<>();
     }
 
     public String getSql() {
@@ -65,18 +50,31 @@ public class SqlEntity {
         return type;
     }
 
-    public void setParams(List<Map<String, Object>> params) {
-        this.params = params;
-    }
-
     public void setType(SqlType type) {
         this.type = type;
     }
 
+    public Map<String, Object> getParams() {
+        return params;
+    }
+
+    public void setParams(Map<String, Object> params) {
+        this.params = params;
+    }
+
     public void addParam(String name, Object value) {
-        Map<String, Object> param = new HashMap<>();
-        param.put(name,value);
-        params.add(param);
+        params.put(name,value);
+    }
+    public void addParam(Map<String,Object> params) {
+        this.params.putAll(params);
+    }
+
+    public void delParam(String name){
+        params.remove(name);
+    }
+
+    public void clear(){
+        params.clear();
     }
 
     public String getBinder() {

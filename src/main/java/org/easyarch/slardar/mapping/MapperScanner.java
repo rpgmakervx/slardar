@@ -56,6 +56,7 @@ public class MapperScanner {
 
     /**
      * 路径扫描，目前不支持通配符*扫描
+     * 路径配置文件不存在时则不扫描
      * 系统启动后只加载一次
      * @param packagePath  包名，空字符或单个*符号代表当前工程下所有包
      * @throws Exception

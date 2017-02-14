@@ -2,9 +2,6 @@ package org.easyarch.slardar.cache;
 
 import org.easyarch.slardar.mapping.ClassItem;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
  * Description :
  * Created by xingtianyu on 17-1-25
@@ -14,11 +11,15 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class InterfaceCache implements Cache<Class,ClassItem> {
 
-    private volatile Map<Class,ClassItem> interfaceMap = new ConcurrentHashMap<>();
+    private volatile Cache<Class,ClassItem> cache;
+
+    public InterfaceCache(Cache<Class,ClassItem> cache){
+        this.cache = cache;
+    }
 
     @Override
     public ClassItem get(Class key) {
-        return interfaceMap.get(key);
+        return cache.get(key);
     }
 
     @Override
@@ -26,21 +27,21 @@ public class InterfaceCache implements Cache<Class,ClassItem> {
         if (value == null){
             return;
         }
-        interfaceMap.put(key,value);
+        cache.set(key,value);
     }
 
     @Override
     public ClassItem remove(Class key) {
-        return interfaceMap.remove(key);
+        return cache.remove(key);
     }
 
     @Override
     public boolean isHit(Class key) {
-        return interfaceMap.containsKey(key);
+        return cache.isHit(key);
     }
 
     @Override
     public void clear() {
-        interfaceMap.clear();
+        cache.clear();
     }
 }

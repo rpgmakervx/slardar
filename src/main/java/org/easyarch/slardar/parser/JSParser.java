@@ -69,7 +69,7 @@ public class JSParser extends ParserAdapter<SqlEntity> {
                 return ;
             }
             Invocable func = (Invocable) engine;
-            Map<String,Object> params = entity.getFlatParams();
+            Map<String,Object> params = entity.getParams();
             String sql = (String) func.invokeFunction(entity.getSuffix(),params);
             configuration.addMappedSql(namespace,entity.getSuffix(),sql);
             sqlBuilder.buildSql(sql);

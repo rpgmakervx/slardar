@@ -113,8 +113,8 @@ public class DefaultDBSession extends DBSessionAdapter {
     }
 
     @Override
-    public int update(String bindOrSql, Map<String, Object> parameter) {
-        return super.update(bindOrSql, parameter);
+    public int update(String bind, Map<String, Object> parameter) {
+        return super.update(bind, parameter);
     }
 
     @Override
@@ -171,13 +171,13 @@ public class DefaultDBSession extends DBSessionAdapter {
             }
         }
         SqlEntity entity = new SqlEntity();
-        entity.setParams(CollectionUtils.flatMapLists(builder.getMapperParameters()));
+        entity.setParams(builder.getParameters());
         entity.setBinder(bind);
         configuration.parseMappedSql(entity);
         String sql = configuration.getMappedSql(interfaceName, methodName);
         //jsqlparser 在这一步，相对其他代码会慢一点
         builder.buildSql(sql);
-        builder.prepareParams();
+        builder.buildParams();
         SqlEntity se = builder.buildEntity(bind);
         cache.addSqlEntity(se);
         return se;
