@@ -26,8 +26,7 @@ public class SqlExecutor extends AbstractExecutor{
 
     private Connection conn;
 
-    public SqlExecutor(Connection conn,boolean supportMeta){
-        super(supportMeta);
+    public SqlExecutor(Connection conn){
         this.conn = conn;
     }
 
@@ -39,6 +38,7 @@ public class SqlExecutor extends AbstractExecutor{
      * @param <T>
      * @return
      */
+    @Override
     public <T> T query(String sql, ResultSetHandler<T> rshandler, Object[] params) {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -61,6 +61,7 @@ public class SqlExecutor extends AbstractExecutor{
      * @param params
      * @return
      */
+    @Override
     public int alter(String sql,Object[] params){
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -75,10 +76,12 @@ public class SqlExecutor extends AbstractExecutor{
         }
     }
 
+    @Override
     public void rollback(){
         ConnectionUtils.close(conn);
     }
 
+    @Override
     public void close(){
         ConnectionUtils.close(conn);
     }
@@ -113,7 +116,7 @@ public class SqlExecutor extends AbstractExecutor{
         ConnConfig.config("root", "123456",
                 "jdbc:mysql://localhost:3306/shopping?useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=false", "com.mysql.jdbc.Driver");
         DataSource dataSource = DBCPoolFactory.newCustomDBCPool(PoolConfig.config(200, 50, 5, 3 * 1000L));
-        final SqlExecutor executor = new MySqlExecutor(dataSource.getConnection());
+        final SqlExecutor executor = new CachedExecutor(dataSource.getConnection());
         System.out.println(executor);
         ResultSetHandler<Integer> handler = new BaseTypeResultSetHandler(Integer.class);
         Integer count = executor.query("select count(1) from user where username = ?", handler, new Object[]{"code4j"});

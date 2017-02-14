@@ -1,7 +1,7 @@
 package org.easyarch.test.controlle;
 
 
-import org.easyarch.slardar.jdbc.exec.MySqlExecutor;
+import org.easyarch.slardar.jdbc.exec.CachedExecutor;
 import org.easyarch.slardar.jdbc.exec.SqlExecutor;
 import org.easyarch.slardar.jdbc.handler.BeanListResultSetHadler;
 import org.easyarch.slardar.jdbc.pool.DBCPoolFactory;
@@ -111,7 +111,7 @@ public class UserController {
         Properties prop = new Properties();
         prop.load(ResourcesUtil.getResourceAsStream("/db.properties"));
         DataSource dataSource = DBCPoolFactory.newConfigedDBCPool(prop);
-        final SqlExecutor executor = new MySqlExecutor(dataSource.getConnection());
+        final SqlExecutor executor = new CachedExecutor(dataSource.getConnection());
         Object[] params = new Object[]{"ewrgthgdsvng"};
         long begin2 = System.currentTimeMillis();
         for (int index = 0;index<7000;index++){

@@ -13,9 +13,10 @@ public class CacheFactory {
 
     private static CacheFactory factory;
 
-    private SqlMapCache sqlMapCache;
-    private InterfaceCache interfaceCache;
-    private ProxyCache proxyCache;
+    private volatile QueryCache queryCache;
+    private volatile SqlMapCache sqlMapCache;
+    private volatile InterfaceCache interfaceCache;
+    private volatile ProxyCache proxyCache;
 
     private CacheFactory(){}
 
@@ -49,5 +50,12 @@ public class CacheFactory {
             proxyCache = new ProxyCache(new LRUCache<>(128));
         }
         return proxyCache;
+    }
+
+    public QueryCache getQueryCache(){
+        if (queryCache == null){
+            queryCache = new QueryCache(new LRUCache<>(1024));
+        }
+        return queryCache;
     }
 }

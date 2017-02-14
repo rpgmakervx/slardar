@@ -1,6 +1,6 @@
 package org.easyarch.slardar.session;
 
-import org.easyarch.slardar.jdbc.exec.MySqlExecutor;
+import org.easyarch.slardar.jdbc.exec.CachedExecutor;
 import org.easyarch.slardar.jdbc.exec.SqlExecutor;
 import org.easyarch.slardar.session.impl.DefaultDBSession;
 import org.easyarch.slardar.session.impl.MapperDBSession;
@@ -25,7 +25,7 @@ public class DBSessionFactory {
     public DBSession newDefaultSession(){
         SqlExecutor executor = null;
         try {
-            executor = new MySqlExecutor(configuration.getDataSource().getConnection());
+            executor = new CachedExecutor(configuration.getDataSource().getConnection());
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
@@ -35,7 +35,7 @@ public class DBSessionFactory {
     public DBSession newDelegateSession(){
         SqlExecutor executor = null;
         try {
-            executor = new MySqlExecutor(configuration.getDataSource().getConnection());
+            executor = new CachedExecutor(configuration.getDataSource().getConnection());
         } catch (SQLException e) {
             e.printStackTrace();
             return null;

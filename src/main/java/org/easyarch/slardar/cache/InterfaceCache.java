@@ -9,7 +9,7 @@ import org.easyarch.slardar.mapping.ClassItem;
  * description:
  */
 
-public class InterfaceCache implements Cache<Class,ClassItem> {
+public class InterfaceCache implements Cache<Class,ClassItem>{
 
     private volatile Cache<Class,ClassItem> cache;
 

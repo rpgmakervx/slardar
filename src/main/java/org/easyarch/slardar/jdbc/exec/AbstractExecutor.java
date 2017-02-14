@@ -4,6 +4,7 @@ package org.easyarch.slardar.jdbc.exec;/**
  *  下午2:30
  */
 
+import org.easyarch.slardar.jdbc.handler.ResultSetHandler;
 import org.easyarch.slardar.utils.ReflectUtils;
 
 import java.beans.PropertyDescriptor;
@@ -17,12 +18,13 @@ import java.sql.*;
 
 public abstract class AbstractExecutor {
 
-    protected boolean supportMeta;
-//    protected final DataSource pool;
-    public AbstractExecutor(boolean supportMeta){
-        this.supportMeta = supportMeta;
-    }
+    abstract public <T> T query(String sql, ResultSetHandler<T> rshandler, Object[] params);
 
+    abstract public int alter(String sql,Object[] params);
+
+    abstract public void rollback();
+
+    abstract public void close();
 
     protected PreparedStatement prepareStatement(Connection conn, String sql) throws SQLException {
         return conn.prepareStatement(sql);
