@@ -19,8 +19,9 @@ Simplicity is the biggest advantage of the Slardar data mapper over object relat
         <version>1.0-SNAPSHOT</version>
     </dependency>
  ```
- ## Get Started:
- ### A simple query:
+## Get Started:
+
+### A simple query:
  
  Assume you have a table named: t_user. A query demo like this:
  
