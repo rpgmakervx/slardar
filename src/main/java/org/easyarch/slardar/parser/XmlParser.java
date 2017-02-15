@@ -10,10 +10,11 @@ import org.easyarch.slardar.session.Configuration;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.Reader;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static org.easyarch.slardar.session.Configuration.DATASOURCE;
+import static org.easyarch.slardar.session.Configuration.LIST;
+import static org.easyarch.slardar.session.Configuration.LOCATION;
 
 /**
  * Description :
@@ -24,12 +25,15 @@ import java.util.Map;
 
 public class XmlParser extends ParserAdapter<Configuration> {
 
+    private static final String NAME = "name";
+    private static final String VALUE = "value";
+
     private String xmlPath;
     private SAXReader saxReader = new SAXReader();
     private Document document = null;
     private Element root = null;
 
-    private Map<String,Map<String,Object>> content = new HashMap<>();
+    private Map<String,Object> content = new HashMap<>();
 
     public XmlParser(String path){
         this.xmlPath = path;
@@ -71,15 +75,40 @@ public class XmlParser extends ParserAdapter<Configuration> {
         while (elementIterator.hasNext()) {
             Element element = elementIterator.next();
             List<Attribute> attributes = element.attributes();
+            Attribute location = element.attribute(LOCATION);
+
             Map<String,Object> attribute = new HashMap<>();
             for (Attribute attr:attributes){
                 attribute.put(attr.getName(),attr.getData());
             }
             content.put(element.getName(),attribute);
+            //datasource支持在节点内配置db信息
+            if (DATASOURCE.equals(element.getName())
+                    &&location==null){
+                Iterator<Element> elemIt = element.elementIterator();
+                Properties prop = new Properties();
+                while (elemIt.hasNext()){
+                    Element elem = elemIt.next();
+                    String name = String.valueOf(elem.attribute(NAME).getData());
+                    String value = String.valueOf(elem.attribute(VALUE).getData());
+                    prop.setProperty(name,value);
+                }
+                attribute.put(LIST,prop);
+            }
+//            if (DATASOURCE.equals(element.getName())
+//                    &&location==null){
+//
+//            }else{
+//                Map<String,Object> attribute = new HashMap<>();
+//                for (Attribute attr:attributes){
+//                    attribute.put(attr.getName(),attr.getData());
+//                }
+//                content.put(element.getName(),attribute);
+//            }
         }
     }
 
-    public Map<String,Map<String,Object>> getContent(){
+    public Map<String,Object> getContent(){
         return content;
     }
 

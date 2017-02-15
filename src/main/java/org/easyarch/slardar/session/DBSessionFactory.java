@@ -26,7 +26,8 @@ public class DBSessionFactory {
     public DBSession newDefaultSession(){
         AbstractExecutor executor = null;
         try {
-            executor = new CachedExecutor(new SqlExecutor(configuration.getDataSource().getConnection()));
+            executor = new CachedExecutor(new SqlExecutor(
+                    configuration.getDataSource().getConnection()),configuration.getCacheEntity());
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
@@ -36,7 +37,8 @@ public class DBSessionFactory {
     public DBSession newDelegateSession(){
         AbstractExecutor executor = null;
         try {
-            executor = new CachedExecutor(new SqlExecutor(configuration.getDataSource().getConnection()));
+            executor = new CachedExecutor(new SqlExecutor(
+                    configuration.getDataSource().getConnection()),configuration.getCacheEntity());
         } catch (SQLException e) {
             e.printStackTrace();
             return null;

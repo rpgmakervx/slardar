@@ -2,7 +2,6 @@ package org.easyarch.test.controlle;
 
 
 import org.easyarch.slardar.jdbc.exec.AbstractExecutor;
-import org.easyarch.slardar.jdbc.exec.CachedExecutor;
 import org.easyarch.slardar.jdbc.exec.SqlExecutor;
 import org.easyarch.slardar.jdbc.handler.BeanListResultSetHadler;
 import org.easyarch.slardar.jdbc.pool.DBCPoolFactory;
@@ -24,10 +23,11 @@ import java.util.Properties;
  * Created by xingtianyu on 17-2-9
  * 上午2:23
  * description:7000次查询 毫秒值
- * jade: 4 861
+ * slardar: 4 861
  * jdbcutil: 4 052
  * jdbc: 3 000
  * mybatis: 890
+ * cached slardar:1750
  *
  * 1次查询 纳秒：
  * jdbc: 620 745
@@ -112,7 +112,7 @@ public class UserController {
         Properties prop = new Properties();
         prop.load(ResourcesUtil.getResourceAsStream("/db.properties"));
         DataSource dataSource = DBCPoolFactory.newConfigedDBCPool(prop);
-        final AbstractExecutor executor = new CachedExecutor(new SqlExecutor(dataSource.getConnection()));
+        final AbstractExecutor executor = new SqlExecutor(dataSource.getConnection());
         Object[] params = new Object[]{"ewrgthgdsvng"};
         long begin2 = System.currentTimeMillis();
         for (int index = 0;index<7000;index++){

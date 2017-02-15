@@ -1,8 +1,8 @@
 package org.easyarch.slardar.mapping;
 
 import org.easyarch.slardar.annotation.sql.Mapper;
-import org.easyarch.slardar.cache.CacheFactory;
 import org.easyarch.slardar.cache.InterfaceCache;
+import org.easyarch.slardar.cache.factory.InterfaceCacheFactory;
 import org.easyarch.slardar.session.impl.MapperDBSession;
 
 import java.lang.reflect.InvocationHandler;
@@ -21,11 +21,13 @@ public class MapperProxy<T> implements InvocationHandler {
 
     private Class<T> interfaceClass;
 
-    private InterfaceCache interfaceCache = CacheFactory.getInstance().getInterfaceCache();
+    private InterfaceCache interfaceCache;
 
     public MapperProxy(MapperDBSession session, Class<T> interfaceClass){
         this.session = session;
         this.interfaceClass = interfaceClass;
+        this.interfaceCache = InterfaceCacheFactory.getInstance()
+                .createCache(session.getConfiguration().getCacheEntity());
     }
 
     /**

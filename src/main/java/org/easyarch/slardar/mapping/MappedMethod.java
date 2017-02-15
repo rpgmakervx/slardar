@@ -2,8 +2,8 @@ package org.easyarch.slardar.mapping;
 
 import org.easyarch.slardar.annotation.sql.SqlParam;
 import org.easyarch.slardar.build.SqlBuilder;
-import org.easyarch.slardar.cache.CacheFactory;
 import org.easyarch.slardar.cache.SqlMapCache;
+import org.easyarch.slardar.cache.factory.SqlMapCacheFactory;
 import org.easyarch.slardar.entity.SqlEntity;
 import org.easyarch.slardar.session.Configuration;
 import org.easyarch.slardar.session.impl.MapperDBSession;
@@ -30,16 +30,17 @@ import static org.easyarch.slardar.parser.Token.BIND_SEPARATOR;
 public class MappedMethod {
     private MapperDBSession session;
 
-    private CacheFactory factory = CacheFactory.getInstance();
+    private SqlMapCacheFactory factory;
 
     public MappedMethod(MapperDBSession session) {
         this.session = session;
+        factory = SqlMapCacheFactory.getInstance();
     }
 
 //        String sql = "select * from t_user where id = $id$ and username like CONCAT('%',$username$,'%') and c > $age$";
     public Object delegateExecute(String interfaceName, Method method, Object[] args) {
         Configuration configuration = session.getConfiguration();
-        SqlMapCache cache = factory.getSqlMapCache();
+        SqlMapCache cache = factory.createCache(session.getConfiguration().getCacheEntity());
         ///检查缓存的sql
         SqlBuilder builder = new SqlBuilder();
         if (cache.isHit(interfaceName,method.getName())){

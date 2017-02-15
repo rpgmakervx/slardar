@@ -1,7 +1,8 @@
 package org.easyarch.slardar.mapping;
 
-import org.easyarch.slardar.cache.CacheFactory;
 import org.easyarch.slardar.cache.ProxyCache;
+import org.easyarch.slardar.cache.factory.ProxyCacheFactory;
+import org.easyarch.slardar.session.Configuration;
 import org.easyarch.slardar.session.impl.MapperDBSession;
 
 import java.lang.reflect.Proxy;
@@ -20,10 +21,12 @@ public class MapperProxyFactory<T> {
     /**
      * 缓存代理实例，减轻动态代理带来的性能损耗
      */
-    private static ProxyCache proxyCache = CacheFactory.getInstance().getProxyCache();
+    private static ProxyCache proxyCache ;
 
-    public MapperProxyFactory(Class interfaceClass) {
+    public MapperProxyFactory(Configuration configuration,Class interfaceClass) {
         this.interfaceClass = interfaceClass;
+        proxyCache = ProxyCacheFactory.getInstance()
+                .createCache(configuration.getCacheEntity());
     }
 
     public T newInstance(MapperDBSession session) {

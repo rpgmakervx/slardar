@@ -1,8 +1,8 @@
 package org.easyarch.slardar.session.impl;
 
 import org.easyarch.slardar.build.SqlBuilder;
-import org.easyarch.slardar.cache.CacheFactory;
 import org.easyarch.slardar.cache.SqlMapCache;
+import org.easyarch.slardar.cache.factory.SqlMapCacheFactory;
 import org.easyarch.slardar.entity.Parameter;
 import org.easyarch.slardar.entity.SqlEntity;
 import org.easyarch.slardar.jdbc.exec.AbstractExecutor;
@@ -28,7 +28,7 @@ import static org.easyarch.slardar.parser.Token.BIND_SEPARATOR;
 
 public class DefaultDBSession extends DBSessionAdapter {
 
-    private CacheFactory factory = CacheFactory.getInstance();
+    private SqlMapCacheFactory factory;
 
     private AbstractExecutor executor;
 
@@ -37,6 +37,7 @@ public class DefaultDBSession extends DBSessionAdapter {
     public DefaultDBSession(Configuration configuration, AbstractExecutor executor) {
         this.executor = executor;
         this.configuration = configuration;
+        this.factory = SqlMapCacheFactory.getInstance();
     }
 
     @Override
@@ -160,7 +161,7 @@ public class DefaultDBSession extends DBSessionAdapter {
         String interfaceName = tokens[0];
         String methodName = tokens[1];
         SqlBuilder builder = new SqlBuilder();
-        SqlMapCache cache = factory.getSqlMapCache();
+        SqlMapCache cache = factory.createCache(configuration.getCacheEntity());
         if (cache.isHit(interfaceName,methodName)) {
             SqlEntity entity = cache.getSqlEntity(interfaceName,methodName);
             builder.buildEntity(entity);

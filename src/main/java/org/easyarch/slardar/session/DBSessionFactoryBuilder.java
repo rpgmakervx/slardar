@@ -20,7 +20,7 @@ public class DBSessionFactoryBuilder {
     public DBSessionFactory build(Reader reader) throws Exception {
         XmlParser xmlParser = new XmlParser(reader);
         Configuration configuration = xmlParser.parse();
-        MapperScanner scanner = new MapperScanner();
+        MapperScanner scanner = new MapperScanner(configuration);
         scanner.scan(configuration.getPacakge());
         return new DBSessionFactory(configuration);
     }
@@ -30,7 +30,7 @@ public class DBSessionFactoryBuilder {
         }
         XmlParser xmlParser = new XmlParser(file.getPath());
         Configuration configuration = xmlParser.parse();
-        MapperScanner scanner = new MapperScanner();
+        MapperScanner scanner = new MapperScanner(configuration);
         scanner.scan(configuration.getPacakge());
         return new DBSessionFactory(configuration);
     }

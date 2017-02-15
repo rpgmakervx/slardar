@@ -4,5 +4,18 @@
 
     <mapper location="classpath:mapper/" />
 
-    <datasource location="classpath:db.properties" class=""/>
+    <cache enable="true" mode="lru" size="512" />
+
+    <!--<datasource location="classpath:db.properties" class="" />-->
+    <datasource class="">
+        <property name="username" value="root" />
+        <property name="password" value="123456" />
+        <property name="url" value="jdbc:mysql://localhost:3306/shopping?useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=false" />
+        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+
+        <property name="maxActive" value="100" />
+        <property name="minIdle" value="10" />
+        <property name="initialSize" value="40" />
+        <property name="maxWait" value="6000" />
+    </datasource>
 </configuration>

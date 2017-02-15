@@ -4,7 +4,7 @@ package org.easyarch.slardar.cache;
  * Description :
  * Created by xingtianyu on 17-1-26
  * 下午10:20
- * description:
+ * description:代理接口类缓存，防止多次生成代理类
  */
 
 public class ProxyCache implements Cache<Class,Object> {

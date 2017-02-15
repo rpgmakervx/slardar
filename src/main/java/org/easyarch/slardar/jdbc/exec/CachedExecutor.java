@@ -5,7 +5,8 @@ package org.easyarch.slardar.jdbc.exec;/**
  */
 
 import org.easyarch.slardar.cache.Cache;
-import org.easyarch.slardar.cache.CacheFactory;
+import org.easyarch.slardar.cache.factory.QueryCacheFactory;
+import org.easyarch.slardar.entity.CacheEntity;
 import org.easyarch.slardar.jdbc.handler.ResultSetHandler;
 import org.easyarch.slardar.utils.CodecUtils;
 
@@ -17,12 +18,13 @@ import org.easyarch.slardar.utils.CodecUtils;
 
 public class CachedExecutor extends AbstractExecutor {
 
-    private Cache<String, Object> cache = CacheFactory.getInstance().getQueryCache();
+    private Cache<String, Object> cache;
 
     private SqlExecutor executor;
 
-    public CachedExecutor(SqlExecutor executor) {
+    public CachedExecutor(SqlExecutor executor, CacheEntity entity) {
         this.executor = executor;
+        this.cache = QueryCacheFactory.getInstance().createCache(entity);
     }
 
     /**

@@ -4,7 +4,7 @@ package org.easyarch.slardar.cache;
  * Description :
  * Created by xingtianyu on 17-2-15
  * 上午2:18
- * description:
+ * description:查询结果缓存
  */
 
 public class QueryCache implements Cache<String,Object> {

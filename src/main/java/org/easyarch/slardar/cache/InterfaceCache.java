@@ -6,7 +6,7 @@ import org.easyarch.slardar.mapping.ClassItem;
  * Description :
  * Created by xingtianyu on 17-1-25
  * 下午3:03
- * description:
+ * description:缓存接口信息，启动slardar扫描接口后缓存用
  */
 
 public class InterfaceCache implements Cache<Class,ClassItem>{

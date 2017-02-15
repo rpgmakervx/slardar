@@ -1,7 +1,7 @@
 package org.easyarch.slardar.session.impl;
 
-import org.easyarch.slardar.cache.CacheFactory;
 import org.easyarch.slardar.cache.ProxyCache;
+import org.easyarch.slardar.cache.factory.ProxyCacheFactory;
 import org.easyarch.slardar.jdbc.exec.AbstractExecutor;
 import org.easyarch.slardar.jdbc.handler.BaseTypeResultSetHandler;
 import org.easyarch.slardar.jdbc.handler.BeanListResultSetHadler;
@@ -23,7 +23,7 @@ import java.util.Map;
 
 public class MapperDBSession extends DBSessionAdapter {
 
-    private CacheFactory factory = CacheFactory.getInstance();
+    private ProxyCacheFactory factory;
 
     private Configuration configuration;
 
@@ -32,6 +32,7 @@ public class MapperDBSession extends DBSessionAdapter {
     public MapperDBSession(Configuration configuration, AbstractExecutor executor) {
         this.executor = executor;
         this.configuration = configuration;
+        factory = ProxyCacheFactory.getInstance();
     }
 
     @Override
@@ -73,11 +74,11 @@ public class MapperDBSession extends DBSessionAdapter {
 
     @Override
     public <T> T getMapper(Class<T> clazz) {
-        ProxyCache proxyCache = factory.getProxyCache();
+        ProxyCache proxyCache = factory.createCache(configuration.getCacheEntity());
         if (proxyCache.isHit(clazz)){
             return (T) proxyCache.get(clazz);
         }
-        MapperProxyFactory<T> mapperProxyFactory = new MapperProxyFactory(clazz);
+        MapperProxyFactory<T> mapperProxyFactory = new MapperProxyFactory(configuration,clazz);
         return mapperProxyFactory.newInstance(this);
     }
 

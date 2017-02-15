@@ -1,5 +1,7 @@
 package org.easyarch.slardar.session;
 
+import org.easyarch.slardar.cache.mode.CacheMode;
+import org.easyarch.slardar.entity.CacheEntity;
 import org.easyarch.slardar.entity.SqlEntity;
 import org.easyarch.slardar.jdbc.cfg.ConnConfig;
 import org.easyarch.slardar.jdbc.cfg.PoolConfig;
@@ -32,13 +34,19 @@ public class Configuration {
     public static final String LOCATION = "location";
     public static final String DATASOURCECLASS = "class";
     public static final String DATASOURCE = "datasource";
+    public static final String CACHE = "cache";
+    public static final String ENABLE = "enable";
+    public static final String MODE = "mode";
+    public static final String SIZE = "size";
+    //存放datasource内部配置db信息用
+    public static final String LIST = "list";
 
     public static final String CLASSPATH = "classpath:";
     public static final String JS = ".js";
 
     private volatile Map<String, Map<String, String>> mappedSqls = new HashMap<>();
 
-    private volatile Map<String,Map<String,Object>> configMap;
+    private volatile Map<String,Object> configMap;
 
     private String configFilePath;
 
@@ -46,7 +54,7 @@ public class Configuration {
 
     private List<Reader> sqlMapperReaders;
 
-    public Configuration(String configPath,Map<String,Map<String,Object>> content) {
+    public Configuration(String configPath,Map<String,Object> content) {
         this.configFilePath = configPath;
         this.configMap = content;
         sqlMapperReaders = new ArrayList<>();
@@ -121,23 +129,27 @@ public class Configuration {
      * 规则同mapper
      */
     private void initDataSource(){
-        Properties prop = new Properties();
-        Map<String,Object> mapper = configMap.get(DATASOURCE);
+        Map<String,Object> mapper = (Map<String, Object>) configMap.get(DATASOURCE);
+        Properties prop = (Properties) mapper.get(LIST);
         String classname = String.valueOf(mapper.get(DATASOURCECLASS));
         try {
-            String baseFilePath = String.valueOf(mapper.get(LOCATION));
-            File baseFile = new File(baseFilePath);
-            if (baseFilePath.startsWith(CLASSPATH)){
-                //去掉classpath:关键字
-                baseFilePath = baseFilePath.replace(CLASSPATH,"");
-                //连接classpath目录和用户输入目录
-                baseFilePath = ResourcesUtil.getResources(baseFilePath);
-            }else if(!baseFile.isAbsolute()){
-                //prefixPath 就是最底层目录路径
-                String prefixPath = FileUtils.getBottomDir(configFilePath);
-                baseFilePath = prefixPath + baseFilePath;
+            if (prop == null){
+                String baseFilePath = String.valueOf(mapper.get(LOCATION));
+                File baseFile = new File(baseFilePath);
+                if (baseFilePath.startsWith(CLASSPATH)){
+                    //去掉classpath:关键字
+                    baseFilePath = baseFilePath.replace(CLASSPATH,"");
+                    //连接classpath目录和用户输入目录
+                    baseFilePath = ResourcesUtil.getResources(baseFilePath);
+                }else if(!baseFile.isAbsolute()){
+                    //prefixPath 就是最底层目录路径
+                    String prefixPath = FileUtils.getBottomDir(configFilePath);
+                    baseFilePath = prefixPath + baseFilePath;
+                }
+                prop.load(new FileInputStream(baseFilePath));
             }
-            prop.load(new FileInputStream(baseFilePath));
+
+
             //引用外部的数据库连接池
             PoolConfig config = PoolConfig.config(prop);
             if (StringUtils.isNotEmpty(classname)&&!classname.equals(DBCPool.class.getName())){
@@ -160,7 +172,7 @@ public class Configuration {
     }
 
     public String getPacakge(){
-        Map<String,Object> pkg = configMap.get(INTERFACE);
+        Map<String,Object> pkg = (Map<String, Object>) configMap.get(INTERFACE);
         if (pkg == null){
             return null;
         }
@@ -168,7 +180,7 @@ public class Configuration {
     }
 
     public String getMapperLocation(){
-        Map<String,Object> mapper = configMap.get(MAPPER);
+        Map<String,Object> mapper = (Map<String, Object>) configMap.get(MAPPER);
         if (mapper == null){
             return null;
         }
@@ -230,12 +242,38 @@ public class Configuration {
         return mapper.containsKey(id);
     }
 
-    public static void main(String[] args) {
-//        Configuration conf = new Configuration(null);
-//        conf.getDataSource();
-//        System.out.println(conf.sqlMapperReaders);
-//        File baseDir = new File("D://mapper/dsds");
-//        System.out.println(baseDir.isAbsolute());
-        System.out.println(ResourcesUtil.getResources("mapper/sqlmapper.js"));
+    private boolean enableCache(){
+        Map<String,Object> cache = (Map<String, Object>) configMap.get(CACHE);
+        if (cache==null){
+            return false;
+        }
+        return Boolean.valueOf(String.valueOf(cache.get(ENABLE)));
+    }
+
+    /**
+     * 缓存大小为0表示不使用缓存
+     * @return
+     */
+    private int getCacheSize(){
+        Map<String,Object> cache = (Map<String, Object>) configMap.get(CACHE);
+        if (cache==null){
+            return 0;
+        }
+        int size = Integer.parseInt(String.valueOf(cache.get(SIZE)));
+        return size<=0?0:size;
+    }
+
+    private CacheMode getCacheMode(){
+        Map<String,Object> cache = (Map<String, Object>) configMap.get(CACHE);
+        if (cache==null){
+            return null;
+        }
+        return CacheMode.valueOf(String.valueOf(cache.get(MODE)).toUpperCase());
+    }
+
+    public CacheEntity getCacheEntity(){
+        CacheEntity entity = new CacheEntity(
+                getCacheSize(),getCacheMode(),enableCache());
+        return entity;
     }
 }
