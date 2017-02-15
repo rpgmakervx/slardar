@@ -5,9 +5,9 @@ import org.easyarch.slardar.cache.CacheFactory;
 import org.easyarch.slardar.cache.SqlMapCache;
 import org.easyarch.slardar.entity.Parameter;
 import org.easyarch.slardar.entity.SqlEntity;
-import org.easyarch.slardar.jdbc.exec.SqlExecutor;
-import org.easyarch.slardar.jdbc.handler.BeanListResultSetHadler;
+import org.easyarch.slardar.jdbc.exec.AbstractExecutor;
 import org.easyarch.slardar.jdbc.handler.BaseTypeResultSetHandler;
+import org.easyarch.slardar.jdbc.handler.BeanListResultSetHadler;
 import org.easyarch.slardar.jdbc.handler.MapResultHandler;
 import org.easyarch.slardar.session.Configuration;
 import org.easyarch.slardar.session.DBSessionAdapter;
@@ -30,11 +30,11 @@ public class DefaultDBSession extends DBSessionAdapter {
 
     private CacheFactory factory = CacheFactory.getInstance();
 
-    private SqlExecutor executor;
+    private AbstractExecutor executor;
 
     private Configuration configuration;
 
-    public DefaultDBSession(Configuration configuration, SqlExecutor executor) {
+    public DefaultDBSession(Configuration configuration, AbstractExecutor executor) {
         this.executor = executor;
         this.configuration = configuration;
     }

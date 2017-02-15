@@ -51,8 +51,13 @@ public class CodecUtils {
     public static String md5(String key){
         return hash(key,MD5.name);
     }
+
     public static String sha1(String key){
         return hash(key,SHA1.name);
+    }
+
+    public static String sha1Obj(Object obj){
+        return sha1(String.valueOf(obj.hashCode()));
     }
 
     public static String hash(String strSrc, String encName) {

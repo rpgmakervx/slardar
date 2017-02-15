@@ -15,8 +15,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class SqlMapCache implements Cache<String,Map<String,SqlEntity>> {
 
-    private volatile Map<String,Map<String,SqlEntity>> sqlMap = new ConcurrentHashMap<>();
-
     private volatile Cache<String,Map<String,SqlEntity>> cache;
 
     public SqlMapCache(Cache<String, Map<String, SqlEntity>> cache) {

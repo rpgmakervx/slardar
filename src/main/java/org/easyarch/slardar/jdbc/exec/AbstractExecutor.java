@@ -22,6 +22,7 @@ public abstract class AbstractExecutor {
 
     abstract public int alter(String sql,Object[] params);
 
+    abstract public void alterBatch(String sql,Object[][]params);
     abstract public void rollback();
 
     abstract public void close();
@@ -79,11 +80,11 @@ public abstract class AbstractExecutor {
             }
             for (Object[] objs:params){
                 for (int index = 0; index < paramLength; index++) {
-                    if (params[index] == null) {
+                    if (objs[index] == null) {
                         ps.setNull(index, Types.VARCHAR);
                         continue;
                     }
-                    ps.setObject(index + 1, params[index]);
+                    ps.setObject(index + 1, objs[index]);
                 }
                 ps.addBatch();
             }

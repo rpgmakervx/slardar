@@ -2,7 +2,7 @@ package org.easyarch.slardar.session.impl;
 
 import org.easyarch.slardar.cache.CacheFactory;
 import org.easyarch.slardar.cache.ProxyCache;
-import org.easyarch.slardar.jdbc.exec.SqlExecutor;
+import org.easyarch.slardar.jdbc.exec.AbstractExecutor;
 import org.easyarch.slardar.jdbc.handler.BaseTypeResultSetHandler;
 import org.easyarch.slardar.jdbc.handler.BeanListResultSetHadler;
 import org.easyarch.slardar.jdbc.handler.BeanResultSetHadler;
@@ -27,9 +27,9 @@ public class MapperDBSession extends DBSessionAdapter {
 
     private Configuration configuration;
 
-    private SqlExecutor executor;
+    private AbstractExecutor executor;
 
-    public MapperDBSession(Configuration configuration, SqlExecutor executor) {
+    public MapperDBSession(Configuration configuration, AbstractExecutor executor) {
         this.executor = executor;
         this.configuration = configuration;
     }

@@ -1,5 +1,6 @@
 package org.easyarch.slardar.session;
 
+import org.easyarch.slardar.jdbc.exec.AbstractExecutor;
 import org.easyarch.slardar.jdbc.exec.CachedExecutor;
 import org.easyarch.slardar.jdbc.exec.SqlExecutor;
 import org.easyarch.slardar.session.impl.DefaultDBSession;
@@ -23,9 +24,9 @@ public class DBSessionFactory {
     }
 
     public DBSession newDefaultSession(){
-        SqlExecutor executor = null;
+        AbstractExecutor executor = null;
         try {
-            executor = new CachedExecutor(configuration.getDataSource().getConnection());
+            executor = new CachedExecutor(new SqlExecutor(configuration.getDataSource().getConnection()));
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
@@ -33,9 +34,9 @@ public class DBSessionFactory {
         return new DefaultDBSession(configuration,executor);
     }
     public DBSession newDelegateSession(){
-        SqlExecutor executor = null;
+        AbstractExecutor executor = null;
         try {
-            executor = new CachedExecutor(configuration.getDataSource().getConnection());
+            executor = new CachedExecutor(new SqlExecutor(configuration.getDataSource().getConnection()));
         } catch (SQLException e) {
             e.printStackTrace();
             return null;

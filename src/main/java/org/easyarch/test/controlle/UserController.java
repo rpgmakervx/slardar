@@ -1,6 +1,7 @@
 package org.easyarch.test.controlle;
 
 
+import org.easyarch.slardar.jdbc.exec.AbstractExecutor;
 import org.easyarch.slardar.jdbc.exec.CachedExecutor;
 import org.easyarch.slardar.jdbc.exec.SqlExecutor;
 import org.easyarch.slardar.jdbc.handler.BeanListResultSetHadler;
@@ -95,7 +96,7 @@ public class UserController {
 
 
     @Test
-    public static void jdbc() throws Exception {
+    public void jdbc() throws Exception {
         long begin1 = System.currentTimeMillis();
         Connection con = JDBCUtil.getConnection();
         PreparedStatement ps = con.prepareStatement("select * from user where client_id = ? ");
@@ -111,7 +112,7 @@ public class UserController {
         Properties prop = new Properties();
         prop.load(ResourcesUtil.getResourceAsStream("/db.properties"));
         DataSource dataSource = DBCPoolFactory.newConfigedDBCPool(prop);
-        final SqlExecutor executor = new CachedExecutor(dataSource.getConnection());
+        final AbstractExecutor executor = new CachedExecutor(new SqlExecutor(dataSource.getConnection()));
         Object[] params = new Object[]{"ewrgthgdsvng"};
         long begin2 = System.currentTimeMillis();
         for (int index = 0;index<7000;index++){
@@ -134,14 +135,14 @@ public class UserController {
 //    }
 
     @Test
-    public void jade(){
+    public void slardar(){
         UserService service = new UserService();
         long begin1 = System.currentTimeMillis();
         for (int index = 0;index<7000;index++){
             service.getUser("ewrgthgdsvng");
         }
         long end1 = System.currentTimeMillis();
-        System.out.println("mybatis use:"+(end1- begin1));
+        System.out.println("slardar use:"+(end1- begin1));
     }
 
 }

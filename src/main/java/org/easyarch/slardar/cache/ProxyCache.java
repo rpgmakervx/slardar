@@ -1,8 +1,5 @@
 package org.easyarch.slardar.cache;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
  * Description :
  * Created by xingtianyu on 17-1-26
@@ -11,8 +8,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 
 public class ProxyCache implements Cache<Class,Object> {
-
-    private volatile Map<Class,Object> proxyMap = new ConcurrentHashMap<>();
 
     private volatile Cache<Class,Object> cache;
 

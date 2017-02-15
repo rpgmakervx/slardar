@@ -92,11 +92,11 @@ public class SqlBuilder {
     }
 
     public SqlType getType(){
-        return sqlParser.getType();
+        return entity.getType();
     }
 
     public String getPreparedSql(){
-        return sqlParser.getPreparedSql();
+        return entity.getPreparedSql();
     }
 
     public Map<String,Object> getParameters(){
@@ -104,11 +104,11 @@ public class SqlBuilder {
     }
 
     public void setType(SqlType type) {
-        sqlParser.setType(type);
+        entity.setType(type);
     }
 
     public void setPreparedSql(String preparedSql) {
-        sqlParser.setPreparedSql(preparedSql);
+        entity.setPreparedSql(preparedSql);
     }
 
     public void setParams(List<String> params) {

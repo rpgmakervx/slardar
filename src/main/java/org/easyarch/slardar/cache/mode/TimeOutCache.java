@@ -17,8 +17,6 @@ public class TimeOutCache<K,V> implements Cache<K,V> {
 
     private final long TIMEOUT;
 
-    private final float DEFAULT_LOAD_FACTOR = 0.75f;
-
     private LinkedHashMap<K, V> cache;
 
     private Map<K,Long> timeTable;

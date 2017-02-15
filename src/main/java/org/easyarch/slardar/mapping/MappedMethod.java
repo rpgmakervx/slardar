@@ -78,7 +78,7 @@ public class MappedMethod {
             SqlEntity se = builder.buildEntity(interfaceName + BIND_SEPARATOR + method.getName());
             cache.addSqlEntity(se);
         }
-        System.out.println("sql param goto:"+builder.getParameters());
+//        System.out.println("sql type:"+builder.getType()+",sql param goto:"+builder.getParameters());
         Object []param = CollectionUtils.gatherMapListsValues(builder.getParameters());
         switch (builder.getType()){
             case SELECT:
