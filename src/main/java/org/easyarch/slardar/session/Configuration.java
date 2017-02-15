@@ -38,6 +38,8 @@ public class Configuration {
     public static final String ENABLE = "enable";
     public static final String MODE = "mode";
     public static final String SIZE = "size";
+    public static final String LEVEL = "level";
+
     //存放datasource内部配置db信息用
     public static final String LIST = "list";
 
@@ -247,7 +249,13 @@ public class Configuration {
         if (cache==null){
             return false;
         }
-        return Boolean.valueOf(String.valueOf(cache.get(ENABLE)));
+        Object value = cache.get(ENABLE);
+        if (value !=null){
+            if (StringUtils.isEmpty(String.valueOf(value))){
+                return false;
+            }
+        }
+        return Boolean.valueOf(String.valueOf(value));
     }
 
     /**
@@ -259,7 +267,13 @@ public class Configuration {
         if (cache==null){
             return 0;
         }
-        int size = Integer.parseInt(String.valueOf(cache.get(SIZE)));
+        Object value = cache.get(SIZE);
+        if (value !=null){
+            if (StringUtils.isEmpty(String.valueOf(value))){
+                return 0;
+            }
+        }
+        int size = Integer.parseInt(String.valueOf(value));
         return size<=0?0:size;
     }
 
@@ -268,7 +282,13 @@ public class Configuration {
         if (cache==null){
             return null;
         }
-        return CacheMode.valueOf(String.valueOf(cache.get(MODE)).toUpperCase());
+        Object value = cache.get(MODE);
+        if (value !=null){
+            if (StringUtils.isEmpty(String.valueOf(value))){
+                return null;
+            }
+        }
+        return CacheMode.valueOf(String.valueOf(value).toUpperCase());
     }
 
     public CacheEntity getCacheEntity(){

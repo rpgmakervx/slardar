@@ -1,5 +1,6 @@
 package org.easyarch.slardar.session;
 
+import org.easyarch.slardar.entity.CacheEntity;
 import org.easyarch.slardar.jdbc.exec.AbstractExecutor;
 import org.easyarch.slardar.jdbc.exec.CachedExecutor;
 import org.easyarch.slardar.jdbc.exec.SqlExecutor;
@@ -24,26 +25,27 @@ public class DBSessionFactory {
     }
 
     public DBSession newDefaultSession(){
-        AbstractExecutor executor = null;
-        try {
-            executor = new CachedExecutor(new SqlExecutor(
-                    configuration.getDataSource().getConnection()),configuration.getCacheEntity());
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
-        return new DefaultDBSession(configuration,executor);
+        return new DefaultDBSession(configuration,getExecutor());
     }
     public DBSession newDelegateSession(){
+        return new MapperDBSession(configuration,getExecutor());
+    }
+
+    private AbstractExecutor getExecutor(){
         AbstractExecutor executor = null;
+        CacheEntity entity = configuration.getCacheEntity();
         try {
-            executor = new CachedExecutor(new SqlExecutor(
-                    configuration.getDataSource().getConnection()),configuration.getCacheEntity());
+            if (entity.isEnable()){
+                executor = new CachedExecutor(new SqlExecutor(
+                        configuration.getDataSource().getConnection()),entity);
+            }else{
+                executor = new SqlExecutor(configuration.getDataSource().getConnection());
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
         }
-        return new MapperDBSession(configuration,executor);
+        return executor;
     }
 
 }
