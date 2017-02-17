@@ -34,7 +34,7 @@ import static org.easyarch.slardar.parser.Token.PLACEHOLDER;
  * 3.select * from user where id = $id$         //从@SqlParam中取值
  * 3.select * from user where id = ?            //通过左值表达式和@Column中的映射取值
  */
-public class SQLParser extends ParserAdapter {
+public class SqlParser extends ParserAdapter {
 
     private Statement statement;
 
@@ -247,7 +247,7 @@ public class SQLParser extends ParserAdapter {
 //        Select select = (Select) statement;
 //        PlainSelect plain = (PlainSelect) select.getSelectBody();
 //        Expression where = plain.getWhere();
-        SQLParser parser = new SQLParser();
+        SqlParser parser = new SqlParser();
         parser.parse("select a,b,c from test where id = $user.id$ and oid in ($map.pid$,$map.oid$,$map.mid$) " +
                 "and age = $map.age$ and create_at between $map.begin$ and $map.end$ and label like $map.label$");
         for (String param:parser.getSqlParamNames()){
