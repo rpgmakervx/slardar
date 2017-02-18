@@ -45,8 +45,8 @@ function insert(params){
 
 function update(params){
     var sql = "update user set ";
-    if (params.userName != undefined){
-        sql += "username = $userName"
+    if (params.username != undefined){
+        sql += "username = ?"
     }
     if (params.phone != undefined){
         sql += ", phone = ?"
@@ -54,7 +54,7 @@ function update(params){
     if(params.password != undefined){
         sql += " , password = ?"
     }
-    sql += ctx.where + " and client_id = $clientId";
+    sql += ctx.where + " and client_id = ?";
     return sql;
 }
 

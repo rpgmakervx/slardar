@@ -45,7 +45,7 @@ public class ParamBinder {
                 for (Field field:fields){
                     field.setAccessible(true);
                     Column column = field.getAnnotation(Column.class);
-                    reflectMap.put(field.getName(),field.get(obj));
+                    reflectMap.put(column.name(),field.get(obj));
                     binder.bind(column.name(),field.getName());
                 }
             }
