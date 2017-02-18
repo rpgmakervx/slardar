@@ -8,18 +8,18 @@
 ctx.namespace = "org.easyarch.test.dao.UserMapper";
 
 function findById(params){
-    return "select * from user where client_id = $id$";
+    return "select * from user where client_id = $id";
 }
 function getCount(params){
     var sql = "select count(1) from user" + ctx.where;
     if (params.clientId != undefined){
-        sql += " and client_id = $clientId$";
+        sql += " and client_id = $clientId";
     }
     if (params.userName != undefined){
-        sql += " and username = $userName$";
+        sql += " and username = $userName";
     }
     if (params.phone != undefined){
-        sql += " and phone = $phone$";
+        sql += " and phone = $phone";
     }
     return sql;
 }
@@ -27,37 +27,37 @@ function getCount(params){
 function findByUser(params) {
     var sql = "select * from user" + ctx.where;
     if (params.clientId != undefined){
-        sql += " and client_id = $clientId$"
+        sql += " and client_id = $clientId"
     }
     if (params.userName != undefined){
-        sql += " and username = $userName$";
+        sql += " and username = $userName";
     }
     if (params.phone != undefined){
-        sql += " and phone = $phone$";
+        sql += " and phone = $phone";
     }
     return sql;
 }
 
 function insert(params){
     return "insert into user(client_id,username,password,phone) " +
-        "values($clientId$,$userName$,$password$,$phone$)"
+        "values($clientId,$userName,$password,$phone)"
 }
 
 function update(params){
     var sql = "update user set ";
     if (params.userName != undefined){
-        sql += "username = $userName$"
+        sql += "username = $userName"
     }
     if (params.phone != undefined){
-        sql += ", phone = $phone$"
+        sql += ", phone = ?"
     }
     if(params.password != undefined){
-        sql += " , password = $password$"
+        sql += " , password = ?"
     }
-    sql += ctx.where + " and client_id = $clientId$";
+    sql += ctx.where + " and client_id = $clientId";
     return sql;
 }
 
 function deleteById(params){
-    return "delete from user where client_id = $clientId$";
+    return "delete from user where client_id = $clientId";
 }

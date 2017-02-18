@@ -5,8 +5,8 @@
     <mapper location="classpath:mapper/" />
 
     <cache enable="true"
-           mode="timeout"
-           size="1"/>
+           mode="lru"
+           size="128"/>
 
     <!--<datasource location="classpath:db.properties" class="" />-->
     <datasource class="">

@@ -10,6 +10,8 @@ package org.easyarch.slardar.parser;
 public class Token {
 
     public static final String KEY = "$";
+    public static final String KEY_L = ":";
+    public static final String KEY_R = "";
 
     public static final String POINT = ".";
 

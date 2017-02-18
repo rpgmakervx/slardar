@@ -107,9 +107,7 @@ public class CollectionUtils {
      */
     public static Object[] gatherMapListsValues(Map<String,Object> map){
         List valueList = new ArrayList();
-        for (Map.Entry<String,Object> entry:map.entrySet()){
-            valueList.add(entry.getValue());
-        }
+        valueList.addAll(map.values());
         return valueList.toArray();
     }
 

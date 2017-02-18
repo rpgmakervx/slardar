@@ -432,7 +432,10 @@ public class StringUtils {
     public static String strip(final String src,final String beginToken,final String endToken){
         int beginIndex = beginToken.length();
         int endIndex = endToken.length();
-        return src.substring(beginIndex,src.length() - beginIndex - endIndex);
+        if (!src.contains(beginToken)){
+            return src;
+        }
+        return src.substring(beginIndex,src.length() - endIndex);
     }
 
     public static String strip(final String src,final String beginToken){
@@ -440,42 +443,6 @@ public class StringUtils {
         return src.substring(beginIndex,src.length() - beginIndex);
     }
 
-//    /**
-//     * 从若干对标签中取出字符，返回字符出现的顺序和字符本身的映射
-//     * @param src
-//     * @param frontTag
-//     * @param backTag
-//     * @return
-//     */
-//    public static Map<Integer,String> splitTag(final String src,String frontTag, String backTag){
-//        Map<Integer,String> mapper = new HashMap<>();
-//        boolean isFront = true;
-//        int countDown = 0;
-//        int startIndex = 0;
-//        int currentIndex = src.indexOf(frontTag);
-//        StringBuffer buffer = new StringBuffer();
-//        String tmp = src;
-//        while (currentIndex > 0){
-//            if (isFront){
-//                currentIndex = tmp.indexOf(frontTag);
-//                isFront = false;
-//            }else{
-//                currentIndex = tmp.indexOf(backTag) + startIndex;
-//                System.out.println("back tag ,, startIndex:"+startIndex+",currentIndex:"+currentIndex);
-//                System.out.println("back tag src:"+src);
-//                String core = src.substring(startIndex,currentIndex);
-//                mapper.put(countDown,core);
-//                countDown++;
-//                isFront = true;
-//            }
-//            tmp = tmp.substring(currentIndex + 1,src.length());
-//            startIndex = currentIndex;
-//            System.out.println("tmp string : "+tmp);
-//            System.out.println("startIndex:"+startIndex+",currentIndex:"+currentIndex);
-//        }
-//
-//        return mapper;
-//    }
 
     private static String random(int count, int start, int end, final boolean letters, final boolean numbers,
                                  final char[] chars, final Random random) {

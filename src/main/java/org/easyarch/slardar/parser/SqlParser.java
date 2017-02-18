@@ -4,6 +4,7 @@ import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.expression.BinaryExpression;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.Function;
+import net.sf.jsqlparser.expression.JdbcParameter;
 import net.sf.jsqlparser.expression.operators.relational.*;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.schema.Column;
@@ -20,8 +21,7 @@ import org.easyarch.slardar.utils.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.easyarch.slardar.parser.Token.KEY;
-import static org.easyarch.slardar.parser.Token.PLACEHOLDER;
+import static org.easyarch.slardar.parser.Token.*;
 
 /**
  * Description :
@@ -50,6 +50,7 @@ public class SqlParser extends ParserAdapter {
     public void parse(String src) {
         this.sql = src;
         preparedSql = sql;
+        System.out.println("sql: "+sql);
         try {
             statement = CCJSqlParserUtil.parse(sql);
         } catch (JSQLParserException e) {
@@ -75,14 +76,21 @@ public class SqlParser extends ParserAdapter {
             deleteCase(delete);
         }
         for (String param: paramNames){
-            preparedSql = preparedSql.replace(StringUtils.center(param,0, KEY),PLACEHOLDER);
+            System.out.println("1 param:"+param);
+            preparedSql = preparedSql.replace(param,PLACEHOLDER);
         }
         List<String> paramNames = new ArrayList<>();
         for (String param:this.paramNames){
-            paramNames.add(StringUtils.strip(param, KEY));
+            System.out.println("2 param:"+param);
+            paramNames.add(StringUtils.strip(param, KEY,KEY_R));
         }
         this.paramNames = paramNames;
     }
+
+    public void parseSql(String src){
+
+    }
+
     public List<String> getSqlParamNames(){
         return paramNames;
     }
@@ -100,12 +108,14 @@ public class SqlParser extends ParserAdapter {
                 List<Expression> expressions = list.getExpressions();
                 for (Expression exp : expressions){
                     paramNames.add(exp.toString());
+//                    handleColumn(exp,paramNames);
                 }
             }
         }else if (itemsList instanceof  ExpressionList){
             ExpressionList expressionList = (ExpressionList) itemsList;
             List<Expression> expressions = expressionList.getExpressions();
             for (Expression exp : expressions){
+//                handleColumn(exp,paramNames);
                 paramNames.add(exp.toString());
             }
         }
@@ -119,10 +129,8 @@ public class SqlParser extends ParserAdapter {
                 ExpressionList expressionList = function.getParameters();
                 List<Expression> exps = expressionList.getExpressions();
                 for (Expression e:exps){
-                    if (e.toString().contains(Token.KEY)){
-                        String columnName = e.toString();
-                        paramNames.add(columnName);
-                    }
+                    String columnName = e.toString();
+                    paramNames.add(columnName);
                 }
             }else if (exp instanceof Column){
                 Column column = (Column) exp;
@@ -139,16 +147,15 @@ public class SqlParser extends ParserAdapter {
     }
 
     private void updateCase(Update update){
+        List<Column> columns = update.getColumns();
+        System.out.println(columns);
         List<Expression> expressions = update.getExpressions();
+        int index = 0;
         for (Expression exp:expressions){
-            if (exp instanceof Column){
-                Column column = (Column) exp;
-                if (column.getColumnName().contains(Token.KEY)){
-                    paramNames.add(column.getColumnName());
-                }
-            }
-            handleWhereCause(update.getWhere(), paramNames);
+            handleColumn(columns.get(index),exp,paramNames);
+            index++;
         }
+        handleWhereCause(update.getWhere(), paramNames);
     }
 
     /**
@@ -174,18 +181,23 @@ public class SqlParser extends ParserAdapter {
             BinaryExpression binaryExpression = (BinaryExpression) whereAfter;
             Expression leftExpression = binaryExpression.getLeftExpression();
             Expression rightExpression = binaryExpression.getRightExpression();
-//            System.out.println("rightExpression :"+rightExpression.getClass());
-            if (leftExpression instanceof Column &&rightExpression instanceof Column){
-                String columnName = rightExpression.toString();
-                params.add(columnName);
-            }else if (rightExpression instanceof Function){
-                Function function = (Function) rightExpression;
-                ExpressionList expressionList = function.getParameters();
-                List<Expression> expressions = expressionList.getExpressions();
-                for (Expression exp:expressions){
-                    if (exp.toString().contains(Token.KEY)){
-                        String columnName = exp.toString();
-                        params.add(columnName);
+            System.out.println("leftExpression :"+leftExpression.getClass());
+            System.out.println("rightExpression :"+rightExpression.getClass());
+            if (leftExpression instanceof Column ){
+                if (rightExpression instanceof Column){
+                    String columnName = rightExpression.toString();
+                    params.add(columnName);
+                }else if (rightExpression instanceof JdbcParameter){
+                    String columnName = ((Column) leftExpression).getColumnName();
+                    params.add(KEY+columnName);
+                }else{
+                    if (rightExpression instanceof Function){
+                        Function function = (Function) rightExpression;
+                        ExpressionList expressionList = function.getParameters();
+                        List<Expression> expressions = expressionList.getExpressions();
+                        for (Expression exp:expressions){
+                            handleColumn(exp,leftExpression,params);
+                        }
                     }
                 }
             }
@@ -214,6 +226,16 @@ public class SqlParser extends ParserAdapter {
                 }
             }
             handleWhereCause(inExpression.getLeftExpression(),params);
+        }
+    }
+
+    private void handleColumn(Expression expL,Expression expR,List<String> params){
+        if (expR instanceof Column){
+            String columnName = expR.toString();
+            params.add(columnName);
+        }else if (expR instanceof JdbcParameter){
+            String columnName = ((Column) expL).getColumnName();
+            params.add(KEY+columnName);
         }
     }
 
@@ -248,10 +270,11 @@ public class SqlParser extends ParserAdapter {
 //        PlainSelect plain = (PlainSelect) select.getSelectBody();
 //        Expression where = plain.getWhere();
         SqlParser parser = new SqlParser();
-        parser.parse("select a,b,c from test where id = $user.id$ and oid in ($map.pid$,$map.oid$,$map.mid$) " +
-                "and age = $map.age$ and create_at between $map.begin$ and $map.end$ and label like $map.label$");
+//        parser.parse("select a,b,c from test where id = $id and oid in ($pid,$oid,$mid) " +
+//                "and age = ?");
+        parser.parse("update t_user set clientId = $clientId , username = ? , password = ? where age > ?");
         for (String param:parser.getSqlParamNames()){
-            System.out.println(StringUtils.strip(param, KEY));
+            System.out.println(param);
         }
         System.out.println("preparedSql:"+parser.getPreparedSql());
 //        Map<Integer,String> map = new HashMap<>();

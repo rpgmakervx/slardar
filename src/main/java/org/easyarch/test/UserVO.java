@@ -6,6 +6,7 @@ package org.easyarch.test;/**
 
 import org.easyarch.slardar.annotation.entity.Column;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -88,5 +89,9 @@ public class UserVO {
                 ", phone='" + phone + '\'' +
                 ", age=" + age +
                 '}';
+    }
+
+    public static void main(String[] args) {
+        System.out.println(new Date(1487157686000l));
     }
 }
