@@ -40,7 +40,6 @@ public class CachedExecutor extends AbstractExecutor {
         String key = hybridInput(sql, params);
         T result = (T) cache.get(key);
         if (result != null) {
-            System.out.println("hit execute cache");
             return result;
         }
         result = executor.query(sql, rshandler, params);

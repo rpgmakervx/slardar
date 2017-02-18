@@ -32,7 +32,6 @@ public class SqlBuilder {
         sqlParser = new SqlParser();
         paramBinder = new ParamBinder();
         entity = new SqlEntity();
-//        paramParser = new ParamParser();
     }
 
     public SqlBuilder buildSql(String sql){
@@ -112,7 +111,7 @@ public class SqlBuilder {
     }
 
     public void setParams(List<String> params) {
-        sqlParser.setParamNames(params);
+        sqlParser.setSqlParamNames(params);
     }
 
     @Override

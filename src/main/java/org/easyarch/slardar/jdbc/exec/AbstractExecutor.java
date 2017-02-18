@@ -42,7 +42,7 @@ public abstract class AbstractExecutor {
             if (params == null||meta == null||count == 0)
                 return;
             if (paramLength != count) {
-                throw new IllegalArgumentException("param length is "+paramLength+",but query string has "+count);
+                throw new IllegalArgumentException("param length is "+paramLength+",but sql string has "+count);
             }
             for (int index = 0; index < paramLength; index++) {
                 if (params[index] == null) {

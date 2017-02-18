@@ -1,7 +1,7 @@
 package org.easyarch.test.druid;
 
+import com.alibaba.druid.sql.ast.expr.SQLBetweenExpr;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
-import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
@@ -17,12 +17,12 @@ import com.alibaba.druid.sql.dialect.mysql.parser.MySqlStatementParser;
 public class SqlParserTest {
 
     public static void main(String[] args) {
-        String sql = " select * from event where eventId = 0001 and eventKey = key and eventName = username";
+        String sql = " select * from event where eventId = 0001 and eventKey = key and eventName between begin and end";
         String insert = " insert into uservalues(id,ooo)";
         //使用mysql解析
-        MySqlStatementParser sqlStatementParser = new MySqlStatementParser(insert) ;
+        MySqlStatementParser sqlStatementParser = new MySqlStatementParser(sql) ;
         //解析select查询
-        System.out.println("parse select "+sqlStatementParser.parseStatement());
+//        System.out.println("parse select "+sqlStatementParser.parseStatement());
         SQLSelectStatement sqlStatement = (SQLSelectStatement) sqlStatementParser.parseStatement();
         SQLSelect sqlSelect = sqlStatement.getSelect() ;
         //获取sql查询块
@@ -33,11 +33,12 @@ public class SqlParserTest {
         SQLBinaryOpExpr expr = (SQLBinaryOpExpr)sqlSelectQuery.getWhere();
         System.out.println("expr:"+expr.getClass().getName());
 //        sqlastOutputVisitor.visit(expr);
-        SQLBinaryOpExpr exprRight = (SQLBinaryOpExpr) expr.getRight();
-        SQLIdentifierExpr sqlIdentifierExpr = (SQLIdentifierExpr) exprRight.getRight();
+        SQLBetweenExpr betweenExpr = (SQLBetweenExpr) expr.getRight();
+        System.out.println(betweenExpr.getBeginExpr().toString());
+//        SQLIdentifierExpr sqlIdentifierExpr = (SQLIdentifierExpr) exprRight.getLeft();
 //        sqlIdentifierExpr.accept(sqlastOutputVisitor);
 //        List<Object> params = sqlVariantRefExpr.getName();
-        System.out.println(sqlIdentifierExpr.getName());
+//        System.out.println(sqlIdentifierExpr.getName());
         int index = 0;
 //        for (TableStat.Column column:sqlastOutputVisitor.getgetColumns()){
 //            System.out.println(column.getName()+":"+params.get(index));

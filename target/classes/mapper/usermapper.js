@@ -12,11 +12,11 @@ function findById(params){
 }
 function getCount(params){
     var sql = "select count(1) from user" + ctx.where;
-    if (params.clientId != undefined){
-        sql += " and client_id = $clientId";
+    if (params.client_id != undefined){
+        sql += " and client_id = $client_id";
     }
-    if (params.userName != undefined){
-        sql += " and username = $userName";
+    if (params.username != undefined){
+        sql += " and username = $username";
     }
     if (params.phone != undefined){
         sql += " and phone = $phone";
@@ -27,10 +27,10 @@ function getCount(params){
 function findByUser(params) {
     var sql = "select * from user" + ctx.where;
     if (params.clientId != undefined){
-        sql += " and client_id = $clientId"
+        sql += " and client_id = $client_id"
     }
-    if (params.userName != undefined){
-        sql += " and username = $userName";
+    if (params.username != undefined){
+        sql += " and username = $username";
     }
     if (params.phone != undefined){
         sql += " and phone = $phone";
@@ -40,21 +40,21 @@ function findByUser(params) {
 
 function insert(params){
     return "insert into user(client_id,username,password,phone) " +
-        "values($clientId,$userName,$password,$phone)"
+        "values($client_id,$username,$password,$phone)"
 }
 
 function update(params){
     var sql = "update user set ";
     if (params.username != undefined){
-        sql += "username = ?"
+        sql += "username = $username"
     }
     if (params.phone != undefined){
-        sql += ", phone = ?"
+        sql += ", phone = $phone"
     }
     if(params.password != undefined){
-        sql += " , password = ?"
+        sql += " , password = $password"
     }
-    sql += ctx.where + " and client_id = ?";
+    sql += ctx.where + " and client_id = $client_id";
     return sql;
 }
 

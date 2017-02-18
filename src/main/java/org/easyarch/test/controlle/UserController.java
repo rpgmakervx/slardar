@@ -68,14 +68,15 @@ public class UserController {
 //        System.out.println("jade use:"+(end1- begin1));
 
         UserService service = new UserService();
-        System.out.println(service.getUser("ewrgthgdsvng"));;
-//        User user = new User();
-//        user.setClientId("++++++");
-//        user.setPhone("150000000");
-//        user.setUserName("updated");
-////        user.setPassword("*******");
+//        System.out.println(service.getUser("ewrgthgdsvng"));;
+        User user = new User();
+        user.setClientId("8d9avt5d6h51w3p0n");
+        user.setPhone("13855496582");
+        user.setUserName("code4j");
+        user.setPassword("3546635234");
 //        service.deleteById("++++++");
-//        service.getUsers(user);
+        System.out.println();
+        service.saveUser(user);
     }
 
     @Test
@@ -134,6 +135,10 @@ public class UserController {
 //        System.out.println("mybatis use:"+(end3- begin3));
 //    }
 
+    /**
+     * druid:1676
+     * jsqlparser:1711
+     */
     @Test
     public void slardar(){
         UserService service = new UserService();
@@ -142,6 +147,20 @@ public class UserController {
             service.getUser("ewrgthgdsvng");
         }
         long end1 = System.currentTimeMillis();
+        System.out.println("slardar use:"+(end1- begin1));
+    }
+
+    /**
+     * jsqlparser:1 276 893 963(nano)
+     * druid:1 289 766 447
+     *
+     */
+    @Test
+    public void slardarOne(){
+        UserService service = new UserService();
+        long begin1 = System.nanoTime();
+        service.getUser("ewrgthgdsvng");
+        long end1 = System.nanoTime();
         System.out.println("slardar use:"+(end1- begin1));
     }
 

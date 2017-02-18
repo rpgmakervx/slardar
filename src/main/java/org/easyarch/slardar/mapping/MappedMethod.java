@@ -44,11 +44,9 @@ public class MappedMethod {
         ///检查缓存的sql
         SqlBuilder builder = new SqlBuilder();
         if (cache.isHit(interfaceName,method.getName())){
-            System.out.println("sqlBuilder hit the cache");
             SqlEntity entity = cache.getSqlEntity(interfaceName,method.getName());
             builder.buildEntity(entity);
         }else{
-            System.out.println("sqlBuilder didnt hit the cache");
             Parameter[] parameters = method.getParameters();
 //            String[] paramNames = ReflectUtils.getMethodParameter(method);
             for (int index=0;index<parameters.length;index++) {

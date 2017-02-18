@@ -48,16 +48,13 @@ public class SqlParser extends ParserAdapter {
 
     @Override
     public void parse(String src) {
-        this.sql = src;
-        preparedSql = sql;
-        System.out.println("sql: "+sql);
+        this.sql = this.preparedSql = src;
         try {
             statement = CCJSqlParserUtil.parse(sql);
         } catch (JSQLParserException e) {
             e.printStackTrace();
         }
         paramNames = new ArrayList<>();
-
         if (statement instanceof Select){
             type = SqlType.SELECT;
             Select select = (Select) statement;
@@ -76,12 +73,10 @@ public class SqlParser extends ParserAdapter {
             deleteCase(delete);
         }
         for (String param: paramNames){
-            System.out.println("1 param:"+param);
             preparedSql = preparedSql.replace(param,PLACEHOLDER);
         }
         List<String> paramNames = new ArrayList<>();
         for (String param:this.paramNames){
-            System.out.println("2 param:"+param);
             paramNames.add(StringUtils.strip(param, KEY,KEY_R));
         }
         this.paramNames = paramNames;
@@ -89,10 +84,6 @@ public class SqlParser extends ParserAdapter {
 
     public void parseSql(String src){
 
-    }
-
-    public List<String> getSqlParamNames(){
-        return paramNames;
     }
 
     /**
@@ -181,8 +172,6 @@ public class SqlParser extends ParserAdapter {
             BinaryExpression binaryExpression = (BinaryExpression) whereAfter;
             Expression leftExpression = binaryExpression.getLeftExpression();
             Expression rightExpression = binaryExpression.getRightExpression();
-            System.out.println("leftExpression :"+leftExpression.getClass());
-            System.out.println("rightExpression :"+rightExpression.getClass());
             if (leftExpression instanceof Column ){
                 if (rightExpression instanceof Column){
                     String columnName = rightExpression.toString();
@@ -190,14 +179,12 @@ public class SqlParser extends ParserAdapter {
                 }else if (rightExpression instanceof JdbcParameter){
                     String columnName = ((Column) leftExpression).getColumnName();
                     params.add(KEY+columnName);
-                }else{
-                    if (rightExpression instanceof Function){
-                        Function function = (Function) rightExpression;
-                        ExpressionList expressionList = function.getParameters();
-                        List<Expression> expressions = expressionList.getExpressions();
-                        for (Expression exp:expressions){
-                            handleColumn(exp,leftExpression,params);
-                        }
+                }else if (rightExpression instanceof Function){
+                    Function function = (Function) rightExpression;
+                    ExpressionList expressionList = function.getParameters();
+                    List<Expression> expressions = expressionList.getExpressions();
+                    for (Expression exp:expressions){
+                        handleColumn(exp,leftExpression,params);
                     }
                 }
             }
@@ -250,6 +237,9 @@ public class SqlParser extends ParserAdapter {
     public SqlType getType(){
         return type;
     }
+    public List<String> getSqlParamNames(){
+        return paramNames;
+    }
 
     public void setType(SqlType type) {
         this.type = type;
@@ -259,7 +249,7 @@ public class SqlParser extends ParserAdapter {
         this.preparedSql = preparedSql;
     }
 
-    public void setParamNames(List<String> paramNames) {
+    public void setSqlParamNames(List<String> paramNames) {
         this.paramNames = paramNames;
     }
 
