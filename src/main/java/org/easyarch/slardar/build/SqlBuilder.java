@@ -3,7 +3,7 @@ package org.easyarch.slardar.build;
 import org.easyarch.slardar.binding.ParamBinder;
 import org.easyarch.slardar.entity.SqlEntity;
 import org.easyarch.slardar.mapping.SqlType;
-import org.easyarch.slardar.parser.SqlParser;
+import org.easyarch.slardar.parser.DruidSqlParser;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class SqlBuilder {
 
-    private SqlParser sqlParser;
+    private DruidSqlParser sqlParser;
 
 //    private ParamParser paramParser;
 
@@ -29,7 +29,7 @@ public class SqlBuilder {
     private SqlEntity entity;
 
     public SqlBuilder(){
-        sqlParser = new SqlParser();
+        sqlParser = new DruidSqlParser();
         paramBinder = new ParamBinder();
         entity = new SqlEntity();
     }
@@ -86,8 +86,14 @@ public class SqlBuilder {
     }
 
     public SqlEntity buildEntity(SqlEntity entity){
-        this.entity = entity;
+        buildSql(entity.getSql());
+        buildParams(entity.getParams());
+        buildParams();
         return this.entity;
+    }
+
+    public SqlEntity getSqlEntity(){
+        return entity;
     }
 
     public SqlType getType(){

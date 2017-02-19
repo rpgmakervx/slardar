@@ -98,13 +98,13 @@ public class UserController {
 
     @Test
     public void jdbc() throws Exception {
-        long begin1 = System.currentTimeMillis();
         Connection con = JDBCUtil.getConnection();
+        long begin1 = System.currentTimeMillis();
         PreparedStatement ps = con.prepareStatement("select * from user where client_id = ? ");
         ps.setString(1,"ewrgthgdsvng");
         ResultSet rs = ps.executeQuery();
-        con.close();
         long end1 = System.currentTimeMillis();
+        con.close();
         System.out.println("jdbc use:"+(end1-begin1));
     }
 
@@ -116,10 +116,10 @@ public class UserController {
         final AbstractExecutor executor = new SqlExecutor(dataSource.getConnection());
         Object[] params = new Object[]{"ewrgthgdsvng"};
         long begin2 = System.currentTimeMillis();
-        for (int index = 0;index<7000;index++){
+//        for (int index = 0;index<7000;index++){
             List<User> users = executor.query("select * from user where client_id = ? ",
                     new BeanListResultSetHadler<User>(User.class), params);
-        }
+//        }
         long end2 = System.currentTimeMillis();
         System.out.println("jdbcutil use:"+(end2- begin2));
     }
@@ -158,9 +158,10 @@ public class UserController {
     @Test
     public void slardarOne(){
         UserService service = new UserService();
-        long begin1 = System.nanoTime();
         service.getUser("ewrgthgdsvng");
-        long end1 = System.nanoTime();
+        long begin1 = System.currentTimeMillis();
+        service.getUser("ewrgthgdsvng");
+        long end1 = System.currentTimeMillis();
         System.out.println("slardar use:"+(end1- begin1));
     }
 

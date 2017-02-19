@@ -1,5 +1,7 @@
 package org.easyarch.slardar.session;
 
+import org.easyarch.slardar.cache.SqlMapCache;
+import org.easyarch.slardar.cache.factory.SqlMapCacheFactory;
 import org.easyarch.slardar.cache.mode.CacheMode;
 import org.easyarch.slardar.entity.CacheEntity;
 import org.easyarch.slardar.entity.SqlEntity;
@@ -9,10 +11,7 @@ import org.easyarch.slardar.jdbc.pool.DBCPool;
 import org.easyarch.slardar.jdbc.pool.DBCPoolFactory;
 import org.easyarch.slardar.mapping.MapperScanner;
 import org.easyarch.slardar.parser.JSParser;
-import org.easyarch.slardar.utils.FileUtils;
-import org.easyarch.slardar.utils.ReflectUtils;
-import org.easyarch.slardar.utils.ResourcesUtil;
-import org.easyarch.slardar.utils.StringUtils;
+import org.easyarch.slardar.utils.*;
 
 import javax.sql.DataSource;
 import java.io.*;
@@ -55,10 +54,12 @@ public class Configuration {
     private DataSource dataSource;
 
     private List<Reader> sqlMapperReaders;
-
+    private SqlMapCache cache;
     public Configuration(String configPath,Map<String,Object> content) {
         this.configFilePath = configPath;
         this.configMap = content;
+        this.cache = SqlMapCacheFactory.getInstance()
+                .createCache(getCacheEntity());
         sqlMapperReaders = new ArrayList<>();
         initMapper();
         initDataSource();
@@ -201,24 +202,22 @@ public class Configuration {
         return this.dataSource;
     }
 
-    public String getMappedSql(String namespace, String id) {
-        if (this.mappedSqls.containsKey(namespace)) {
-            return mappedSqls.get(namespace).get(id);
+    public String getMappedSql(String namespace, String id,Object ... params) {
+        if (cache.isHit(namespace,id,params)) {
+            return cache.getSqlEntity(namespace,id,params).getPreparedSql();
         }
         return "";
     }
 
-    public void addMappedSql(String namespace, String id, String sql) {
-        Map<String, String> newMap = new HashMap<>();
-        newMap.put(id, sql);
-        if (mappedSqls.containsKey(namespace)) {
-            Map<String, String> sqlMap = mappedSqls.get(namespace);
-            if (!sqlMap.containsKey(id)){
-                sqlMap.putAll(newMap);
-            }
-        } else {
-            mappedSqls.put(namespace,newMap);
-        }
+    /**
+     * 之前add过后不会不命中
+     * @param namespace
+     * @param id
+     * @param params
+     * @return
+     */
+    public SqlEntity getMappedSql(String namespace, String id,Collection params) {
+        return cache.getSqlEntity(namespace,id,params);
     }
 
     /**
@@ -226,8 +225,9 @@ public class Configuration {
      * @param sqlEntity
      */
     public void parseMappedSql(SqlEntity sqlEntity){
-        if (containsSql(sqlEntity.getPrefix(),sqlEntity.getSuffix())){
-            return;
+        if (cache.isHit(sqlEntity.getPrefix()
+                ,sqlEntity.getSuffix(),sqlEntity.getParams().values())){
+            return ;
         }
         for (Reader reader:sqlMapperReaders){
             JSParser parser = new JSParser(reader,this);
@@ -238,10 +238,16 @@ public class Configuration {
     private boolean containsSql(String namespace,String id){
         Map<String,String> mapper = mappedSqls.get(namespace);
         if (mapper == null){
-
             return false;
         }
         return mapper.containsKey(id);
+    }
+
+    private String hashEntity(SqlEntity entity){
+        StringBuffer keyBuffer = new StringBuffer();
+        keyBuffer.append(CodecUtils.sha1(entity.getPrefix()))
+                .append(CodecUtils.sha1Obj(entity.getParams()));
+        return CodecUtils.sha1(keyBuffer.toString());
     }
 
     private boolean enableCache(){

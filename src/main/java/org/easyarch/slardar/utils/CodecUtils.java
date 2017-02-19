@@ -13,6 +13,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.*;
 
 import static org.easyarch.slardar.utils.CodecUtils.HashType.*;
 
@@ -57,6 +58,44 @@ public class CodecUtils {
     }
 
     public static String sha1Obj(Object obj){
+        if (obj == null){
+            return "";
+        }
+        if (obj instanceof Map){
+            Map map = (Map) obj;
+            Set<Map.Entry> entrySet = map.entrySet();
+            if (CollectionUtils.isEmpty(entrySet)){
+                return "";
+            }
+            StringBuffer buffer = new StringBuffer();
+            for (Map.Entry entry : entrySet){
+                buffer.append(sha1Obj(entry.getKey()));
+                buffer.append(sha1Obj(entry.getValue()));
+            }
+            return sha1(buffer.toString());
+        }
+        if (Collection.class.isAssignableFrom(obj.getClass())){
+            Collection col = (Collection) obj;
+            if (CollectionUtils.isEmpty(col)){
+                return "";
+            }
+            StringBuffer buffer = new StringBuffer();
+            for (Object o:col){
+                buffer.append(sha1Obj(o));
+            }
+            return sha1(buffer.toString());
+        }
+        if (obj.getClass().isArray()){
+            Object[] objs = (Object[]) obj;
+            if (objs.length == 0){
+                return"";
+            }
+            StringBuffer buffer = new StringBuffer();
+            for (Object o:objs){
+                buffer.append(sha1Obj(o));
+            }
+            return sha1(buffer.toString());
+        }
         return sha1(String.valueOf(obj.hashCode()));
     }
 
@@ -132,5 +171,14 @@ public class CodecUtils {
         HashType(String name) {
             this.name = name;
         }
+    }
+
+    public static void main(String[] args) {
+        List<String> param = new ArrayList<>();
+        param.add("1");
+        param.add("2");
+        param.add("3");
+        System.out.println("collection:"+sha1Obj(param));
+        System.out.println("array:"+sha1Obj(param.toArray()));
     }
 }

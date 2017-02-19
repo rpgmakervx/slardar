@@ -2,7 +2,6 @@ package org.easyarch.slardar.mapping;
 
 import org.easyarch.slardar.annotation.sql.SqlParam;
 import org.easyarch.slardar.build.SqlBuilder;
-import org.easyarch.slardar.cache.SqlMapCache;
 import org.easyarch.slardar.cache.factory.SqlMapCacheFactory;
 import org.easyarch.slardar.entity.SqlEntity;
 import org.easyarch.slardar.session.Configuration;
@@ -40,44 +39,34 @@ public class MappedMethod {
 //        String sql = "select * from t_user where id = $id$ and username like CONCAT('%',$username$,'%') and c > $age$";
     public Object delegateExecute(String interfaceName, Method method, Object[] args) {
         Configuration configuration = session.getConfiguration();
-        SqlMapCache cache = factory.createCache(session.getConfiguration().getCacheEntity());
         ///检查缓存的sql
         SqlBuilder builder = new SqlBuilder();
-        if (cache.isHit(interfaceName,method.getName())){
-            SqlEntity entity = cache.getSqlEntity(interfaceName,method.getName());
-            builder.buildEntity(entity);
-        }else{
-            Parameter[] parameters = method.getParameters();
-//            String[] paramNames = ReflectUtils.getMethodParameter(method);
-            for (int index=0;index<parameters.length;index++) {
-                if (args[index] instanceof Map) {
-                    builder.buildParams((Map<String,Object>)args[index]);
-                    continue;
-                }
-                if (ReflectUtils.isFrequentlyUseType(parameters[index].getType())) {
-                    SqlParam sqlParam = parameters[index].getAnnotation(SqlParam.class);
-                    if (sqlParam == null) {
-                        builder.buildParams(args[index]);
-                    }else{
-                        builder.buildParams(args[index],sqlParam.name());
-                    }
-                }else{
-                    builder.buildParams(args[index]);
-                }
+        SqlEntity entity = null;
+        Parameter[] parameters = method.getParameters();
+        for (int index=0;index<parameters.length;index++) {
+            if (args[index] instanceof Map) {
+                builder.buildParams((Map<String,Object>)args[index]);
+                continue;
             }
-            //先构造参数，根据参数获得动态sql,然后缓存
-            SqlEntity entity = new SqlEntity();
-            entity.setParams(builder.getParameters());
-            entity.setBinder(interfaceName + BIND_SEPARATOR + method.getName());
-            configuration.parseMappedSql(entity);
-            String sql = configuration.getMappedSql(interfaceName, method.getName());
-            //jsqlparser 在这一步，相对其他代码会慢一点
-            builder.buildSql(sql);
-            builder.buildParams();
-            SqlEntity se = builder.buildEntity(interfaceName + BIND_SEPARATOR + method.getName());
-            cache.addSqlEntity(se);
+            if (ReflectUtils.isFrequentlyUseType(parameters[index].getType())) {
+                SqlParam sqlParam = parameters[index].getAnnotation(SqlParam.class);
+                if (sqlParam == null) {
+                    builder.buildParams(args[index]);
+                }else{
+                    builder.buildParams(args[index],sqlParam.name());
+                }
+            }else{
+                builder.buildParams(args[index]);
+            }
         }
-//        System.out.println("sql type:"+builder.getType()+",sql param goto:"+builder.getParameters());
+        //先构造参数，根据参数获得动态sql,然后缓存
+        entity = new SqlEntity();
+        entity.setParams(builder.getParameters());
+        entity.setBinder(interfaceName + BIND_SEPARATOR + method.getName());
+        //js解析会花较多时间
+        configuration.parseMappedSql(entity);
+        SqlEntity se = configuration.getMappedSql(interfaceName, method.getName(),entity.getParams().values());
+        builder.buildEntity(se);
         Object []param = CollectionUtils.gatherMapListsValues(builder.getParameters());
         switch (builder.getType()){
             case SELECT:
@@ -93,7 +82,6 @@ public class MappedMethod {
                     return session.selectOne(builder.getPreparedSql(), returnType,param);
                 }
             case INSERT:
-                System.out.println("go to insert params:"+builder.getParameters());
                 return session.insert(builder.getPreparedSql(),param);
             case UPDATE:return session.update(builder.getPreparedSql(),param);
             case DELETE:return session.delete(builder.getPreparedSql(),param);

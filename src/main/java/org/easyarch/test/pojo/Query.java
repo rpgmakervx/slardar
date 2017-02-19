@@ -1,11 +1,17 @@
 package org.easyarch.test.pojo;
 
-
 import org.easyarch.slardar.annotation.entity.Column;
 import org.easyarch.slardar.annotation.entity.Table;
 
+/**
+ * Description :
+ * Created by xingtianyu on 17-2-19
+ * 下午7:52
+ * description:
+ */
+
 @Table(tableName = "user")
-public class User {
+public class Query {
 
     @Column(name = "client_id")
     private String clientId;
@@ -19,12 +25,16 @@ public class User {
     @Column(name = "phone")
     private String phone;
 
+    private int pageIndex;
+
+    private int pageSize;
+
     public String getClientId() {
         return clientId;
     }
 
     public void setClientId(String clientId) {
-        this.clientId = clientId == null ? null : clientId.trim();
+        this.clientId = clientId;
     }
 
     public String getUserName() {
@@ -40,7 +50,7 @@ public class User {
     }
 
     public void setPassword(String password) {
-        this.password = password == null ? null : password.trim();
+        this.password = password;
     }
 
     public String getPhone() {
@@ -48,16 +58,22 @@ public class User {
     }
 
     public void setPhone(String phone) {
-        this.phone = phone == null ? null : phone.trim();
+        this.phone = phone;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "clientId='" + clientId + '\'' +
-                ", userName='" + userName + '\'' +
-                ", password='" + password + '\'' +
-                ", phone='" + phone + '\'' +
-                '}';
+    public int getPageIndex() {
+        return pageIndex;
+    }
+
+    public void setPageIndex(int pageIndex) {
+        this.pageIndex = pageIndex;
+    }
+
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
     }
 }

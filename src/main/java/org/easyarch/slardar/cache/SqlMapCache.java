@@ -1,10 +1,11 @@
 package org.easyarch.slardar.cache;
 
 import org.easyarch.slardar.entity.SqlEntity;
-import org.easyarch.slardar.mapping.SqlType;
+import org.easyarch.slardar.utils.CodecUtils;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Description :
@@ -13,79 +14,78 @@ import java.util.concurrent.ConcurrentHashMap;
  * description:保存sql解析和参数构造的结果
  */
 
-public class SqlMapCache implements Cache<String,Map<String,SqlEntity>> {
+public class SqlMapCache implements Cache<String,SqlEntity> {
 
-    private volatile Cache<String,Map<String,SqlEntity>> cache;
+    private volatile Cache<String,SqlEntity> cache;
 
-    public SqlMapCache(Cache<String, Map<String, SqlEntity>> cache) {
+    public SqlMapCache(Cache<String,SqlEntity> cache) {
         this.cache = cache;
     }
 
-    public SqlEntity getSqlEntity(String namespace, String id){
-        Map<String,SqlEntity> statement = get(namespace);
-        if(statement == null){
-            return new SqlEntity();
-        }
-        return statement.get(id);
+//    public SqlEntity getSqlEntity(String namespace, String id){
+//        Map<String,SqlEntity> statement = get(namespace);
+//        if(statement == null){
+//            return new SqlEntity();
+//        }
+//        return statement.get(id);
+//    }
+
+    public SqlEntity getSqlEntity(String namespace, String id,Object[] params){
+//        String namespaceHash = hashBinder(namespace);
+//        String idHash = hashBinder(id);
+//        String paramHash = hashParams(params);
+//        Map<String, Map<String, SqlEntity>> idParamStatement = get(namespaceHash);
+//        if(idParamStatement == null){
+//            return new SqlEntity();
+//        }else{
+//            Map<String, SqlEntity> paramStatment = idParamStatement.get(idHash);
+//            if (paramStatment != null){
+//                return paramStatment.get(paramHash);
+//            }else{
+//                return new SqlEntity();
+//            }
+//        }
+        String key = hashEntity(namespace,id,params);
+        return get(key);
+    }
+    public SqlEntity getSqlEntity(String namespace, String id,Collection params){
+        return getSqlEntity(namespace,id,params.toArray());
     }
 
     public void addSqlEntity(SqlEntity sqlEntity){
-        String namespace = sqlEntity.getPrefix();
-        String id = sqlEntity.getSuffix();
-        Map<String,SqlEntity> statement = get(namespace);
-        if (statement != null){
-            statement.put(id,sqlEntity);
-            return;
+        String key = null;
+        if (sqlEntity.getParams() != null){
+            Collection col = sqlEntity.getParams().values();
+            key = hashEntity(sqlEntity.getPrefix()
+                    ,sqlEntity.getSuffix(),col.toArray());
+        }else{
+            key = hashEntity(sqlEntity.getPrefix()
+                    ,sqlEntity.getSuffix(),new Object[0]);
         }
-        statement = new ConcurrentHashMap<>();
-        statement.put(id,sqlEntity);
-        cache.set(namespace,statement);
+        set(key,sqlEntity);
     }
 
-    public String getSql(String namespace,String id){
-        Map<String,SqlEntity> statement = cache.get(namespace);
-        if(statement == null){
-            return "";
-        }
-        return statement.get(id).getSql();
+    public boolean isHit(String namespace,String id,Object[] params){
+        String key = hashEntity(namespace,id,params);
+        return isHit(key);
     }
-
-    public Map<String,Object> getParams(String namespace, String id){
-        Map<String,SqlEntity> statement = cache.get(namespace);
-        if(statement == null){
-            return new LinkedHashMap<>();
-        }
-        return statement.get(id).getParams();
-    }
-
-    public SqlType getType(String namespace,String id){
-        Map<String,SqlEntity> statement = cache.get(namespace);
-        if(statement == null){
-            return null;
-        }
-        return statement.get(id).getType();
-    }
-
-    public boolean isHit(String namespace,String id){
-        Map<String,SqlEntity> map = get(namespace);
-        if (map != null && map.containsKey(id)){
-            return true;
-        }
-        return false;
+    public boolean isHit(String namespace,String id,Collection params){
+        String key = hashEntity(namespace,id,params.toArray());
+        return isHit(key);
     }
 
     @Override
-    public Map<String,SqlEntity> get(String key) {
+    public SqlEntity get(String key) {
         return cache.get(key);
     }
 
     @Override
-    public void set(String key, Map<String,SqlEntity> value) {
+    public void set(String key, SqlEntity value) {
         cache.set(key,value);
     }
 
     @Override
-    public Map<String,SqlEntity> remove(String key) {
+    public SqlEntity remove(String key) {
         return cache.remove(key);
     }
 
@@ -94,9 +94,32 @@ public class SqlMapCache implements Cache<String,Map<String,SqlEntity>> {
         return cache.isHit(key);
     }
 
+    private String hashEntity(String namespace,String id,Object[] params){
+        StringBuffer keyBuffer = new StringBuffer();
+        keyBuffer.append(CodecUtils.sha1(namespace))
+                .append(CodecUtils.sha1Obj(id))
+                .append(CodecUtils.sha1Obj(params));
+        return CodecUtils.sha1(keyBuffer.toString());
+    }
 
+    private String hashBinder(String namespace){
+        return CodecUtils.sha1(namespace);
+    }
+
+    private String hashParams(Collection params){
+        return CodecUtils.sha1Obj(params);
+    }
+    private String hashParams(Object[] params){
+        return CodecUtils.sha1Obj(params);
+    }
     @Override
     public void clear() {
         cache.clear();
+    }
+
+    public static void main(String[] args) {
+        List<String> list = new ArrayList<>();
+        String[] array = list.toArray(new String[list.size()]);
+        System.out.println(array.length);
     }
 }

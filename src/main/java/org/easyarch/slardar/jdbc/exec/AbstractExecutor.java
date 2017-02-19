@@ -46,7 +46,7 @@ public abstract class AbstractExecutor {
             }
             for (int index = 0; index < paramLength; index++) {
                 if (params[index] == null) {
-                    ps.setNull(index, Types.VARCHAR);
+                    ps.setNull(index + 1, Types.VARCHAR);
                     continue;
                 }
                 ps.setObject(index + 1, params[index]);

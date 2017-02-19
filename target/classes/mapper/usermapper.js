@@ -26,7 +26,7 @@ function getCount(params){
 
 function findByUser(params) {
     var sql = "select * from user" + ctx.where;
-    if (params.clientId != undefined){
+    if (params.client_id != undefined){
         sql += " and client_id = $client_id"
     }
     if (params.username != undefined){
@@ -35,6 +35,20 @@ function findByUser(params) {
     if (params.phone != undefined){
         sql += " and phone = $phone";
     }
+    return sql;
+}
+function findByQuery(params) {
+    var sql = "select * from user" + ctx.where;
+    if (params.client_id != undefined){
+        sql += " and client_id = $client_id"
+    }
+    if (params.username != undefined){
+        sql += " and username = $username";
+    }
+    if (params.phone != undefined){
+        sql += " and phone = $phone";
+    }
+    sql += " limit $pageIndex,$pageSize"
     return sql;
 }
 

@@ -1,6 +1,8 @@
 package org.easyarch.slardar.parser;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
+import com.alibaba.druid.sql.ast.SQLLimit;
+import com.alibaba.druid.sql.ast.SQLOrderBy;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.expr.*;
 import com.alibaba.druid.sql.ast.statement.*;
@@ -21,7 +23,7 @@ import static org.easyarch.slardar.parser.Token.*;
  * description:
  */
 
-public class SQLParser extends ParserAdapter {
+public class DruidSqlParser extends ParserAdapter {
 
     private MySqlStatementParser statementParser;
 
@@ -66,6 +68,22 @@ public class SQLParser extends ParserAdapter {
         SQLSelect select = statement.getSelect();
         SQLSelectQueryBlock selectQuery = (SQLSelectQueryBlock) select.getQuery();
         handleWhereCause(selectQuery.getWhere(),paramNames);
+        SQLLimit limit = selectQuery.getLimit();
+        if (limit != null){
+            SQLExpr offset = limit.getOffset();
+            SQLExpr count = limit.getRowCount();
+            paramNames.add(offset.toString());
+            paramNames.add(count.toString());
+        }
+        SQLOrderBy orderBy = selectQuery.getOrderBy();
+        if (orderBy != null){
+            List<SQLSelectOrderByItem> items = orderBy.getItems();
+            for (SQLSelectOrderByItem item:items){
+                SQLExpr orderExpr = item.getExpr();
+                paramNames.add(orderExpr.toString());
+            }
+        }
+
     }
 
     private void insertCase(SQLInsertStatement statement){
@@ -98,6 +116,7 @@ public class SQLParser extends ParserAdapter {
     }
 
     public void handleWhereCause(SQLExpr whereAfter, List<String> paramNames){
+        System.out.println("expr type:"+whereAfter.getClass().getName());
         if (whereAfter instanceof SQLIdentifierExpr){
             return;
         }
@@ -178,19 +197,20 @@ public class SQLParser extends ParserAdapter {
     }
 
     public static void main(String[] args) {
-        String sql = " select * from event where eventId = ? and eventKey = key and eventName between ? and ?";
+        String sql = " select * from event where eventId = ? and eventKey = key and eventName between ? and ? order by $create_at desc,$update asc limit $index,$size";
         String insert = "insert into user (client_d,username,password,phone) values(clientId,userName,password,phone)";
 //        MySqlStatementParser statementParser = new MySqlStatementParser(insert);
 //        SQLStatement statement = statementParser.parseStatement();
 //        SQLInsertStatement insertStatement = (SQLInsertStatement) statement;
 //        System.out.println(insertStatement.getValuesList());
-        SQLParser parser = new SQLParser();
-        SqlParser parser2 = new SqlParser();
-        long begin = System.nanoTime();
-        for (int index=0;index<50;index++){
-            parser2.parse(sql);
-        }
-        long end = System.nanoTime();
-        System.out.println("cost:"+(end - begin));
+        DruidSqlParser parser = new DruidSqlParser();
+        JSqlParser parser2 = new JSqlParser();
+        parser.parse(sql);
+        System.out.println(parser.getSqlParamNames());
+//        long begin = System.nanoTime();
+//        for (int index=0;index<50;index++){
+//        }
+//        long end = System.nanoTime();
+//        System.out.println("cost:"+(end - begin));
     }
 }

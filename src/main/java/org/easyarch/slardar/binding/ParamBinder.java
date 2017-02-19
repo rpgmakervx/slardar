@@ -1,7 +1,6 @@
 package org.easyarch.slardar.binding;
 
 import org.easyarch.slardar.annotation.entity.Column;
-import org.easyarch.slardar.annotation.entity.Table;
 
 import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
@@ -34,17 +33,13 @@ public class ParamBinder {
         try {
             FieldBinder<T> binder = new FieldBinder(clazz);
             Field[] fields = clazz.getDeclaredFields();
-            Table table = clazz.getAnnotation(Table.class);
-            if (table == null){
-                for (Field field:fields){
-                    field.setAccessible(true);
+            for (Field field:fields){
+                field.setAccessible(true);
+                Column column = field.getAnnotation(Column.class);
+                if (column == null){
                     reflectMap.put(field.getName(),field.get(obj));
                     binder.bind(field.getName(),field.getName());
-                }
-            }else{
-                for (Field field:fields){
-                    field.setAccessible(true);
-                    Column column = field.getAnnotation(Column.class);
+                }else{
                     reflectMap.put(column.name(),field.get(obj));
                     binder.bind(column.name(),field.getName());
                 }

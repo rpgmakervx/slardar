@@ -1,6 +1,7 @@
 package org.easyarch.test.dao;
 
 import org.easyarch.slardar.annotation.sql.SqlParam;
+import org.easyarch.test.pojo.Query;
 import org.easyarch.test.pojo.User;
 
 import java.util.List;
@@ -17,6 +18,7 @@ public interface UserMapper {
     public User findById(@SqlParam(name = "id") String id);
 
     public List<User> findByUser(User user);
+    public List<User> findByQuery(Query query);
 
     public int getCount(User user);
     public int insert(User user);

@@ -73,7 +73,7 @@ public class CachedExecutor extends AbstractExecutor {
      * @param params
      * @return
      */
-    public String hybridInput(String sql, Object... params) {
+    public String hybridInput(String sql, Object[] params) {
         StringBuffer buffer = new StringBuffer();
         buffer.append(sql);
         for (Object obj : params) {

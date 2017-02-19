@@ -72,9 +72,9 @@ public class BeanWrapper<T> extends WrapperAdapter<T> implements Wrapper<T> {
                 Object value = rs.getObject(i + 1);
                 String propertyName = fieldBinder.getProperty(type, meta.getColumnName(i + 1));
                 if (StringUtils.isEmpty(propertyName)){
-                    ReflectUtils.setter(object,meta.getColumnName(i + 1), value);
+                    ReflectUtils.setFieldValue(object,meta.getColumnName(i + 1), value);
                 }else{
-                    ReflectUtils.setter(object,propertyName, value);
+                    ReflectUtils.setFieldValue(object,propertyName, value);
                 }
             }
             return (T) object;

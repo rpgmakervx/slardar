@@ -4,8 +4,10 @@ import org.easyarch.slardar.entity.Parameter;
 import org.easyarch.slardar.session.DBSession;
 import org.easyarch.slardar.session.DBSessionFactory;
 import org.easyarch.slardar.session.DBSessionFactoryBuilder;
+import org.easyarch.slardar.utils.ParamUtil;
 import org.easyarch.slardar.utils.ResourcesUtil;
 import org.easyarch.test.dao.UserMapper;
+import org.easyarch.test.pojo.Query;
 import org.easyarch.test.pojo.User;
 
 import java.util.List;
@@ -51,24 +53,33 @@ public class UserService {
     public List<User> getUsers(User user){
         return mapper.findByUser(user);
     }
+    public List<User> getUsers(Query query){
+        return mapper.findByQuery(query);
+    }
+
     public List<User> fetchUsers(User user){
-        Parameter param = new Parameter("userName",user.getUserName());
-        return defaultSession.selectList(UserMapper.class.getName()+"@"+"findByUser",User.class,param);
+        return defaultSession.selectList(UserMapper.class.getName()+"@"+"findByUser"
+                ,User.class,ParamUtil.create(user));
     }
 
     public void saveUser(User user){
         mapper.insert(user);
     }
     public void insertUser(User user){
-        Parameter p1 = new Parameter("clientId",user.getClientId());
-        Parameter p2 = new Parameter("userName",user.getUserName());
-        Parameter p3 = new Parameter("password",user.getPassword());
-        Parameter p4 = new Parameter("phone",user.getPhone());
-        defaultSession.insert(UserMapper.class.getName()+"@"+"insert",p1,p2,p3,p4);
+//        Parameter p1 = new Parameter("clientId",user.getClientId());
+//        Parameter p2 = new Parameter("userName",user.getUserName());
+//        Parameter p3 = new Parameter("password",user.getPassword());
+//        Parameter p4 = new Parameter("phone",user.getPhone());
+        defaultSession.insert(UserMapper.class.getName()+"@"+"insert", ParamUtil.create(user));
     }
 
     public void update(User user){
         mapper.update(user);
+    }
+
+    public List<User> searchUsers(User user){
+        return session.selectList("select * from user where client_id = ?"
+                ,User.class,user.getClientId());
     }
 
     public void deleteById(String id){

@@ -162,8 +162,8 @@ public class DefaultDBSession extends DBSessionAdapter {
         String methodName = tokens[1];
         SqlBuilder builder = new SqlBuilder();
         SqlMapCache cache = factory.createCache(configuration.getCacheEntity());
-        if (cache.isHit(interfaceName,methodName)) {
-            SqlEntity entity = cache.getSqlEntity(interfaceName,methodName);
+        if (cache.isHit(interfaceName,methodName,parameters)) {
+            SqlEntity entity = cache.getSqlEntity(interfaceName,methodName,parameters);
             builder.buildEntity(entity);
         }else{
             for (int index=0;index<parameters.length;index++){
@@ -174,13 +174,10 @@ public class DefaultDBSession extends DBSessionAdapter {
         SqlEntity entity = new SqlEntity();
         entity.setParams(builder.getParameters());
         entity.setBinder(bind);
+        //js解析会花较多时间
         configuration.parseMappedSql(entity);
-        String sql = configuration.getMappedSql(interfaceName, methodName);
-        //jsqlparser 在这一步，相对其他代码会慢一点
-        builder.buildSql(sql);
-        builder.buildParams();
-        SqlEntity se = builder.buildEntity(bind);
-        cache.addSqlEntity(se);
-        return se;
+        SqlEntity se = configuration.getMappedSql(interfaceName
+                , methodName,entity.getParams().values());
+        return builder.buildEntity(se);
     }
 }

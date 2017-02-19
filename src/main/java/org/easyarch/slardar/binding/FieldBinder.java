@@ -1,7 +1,6 @@
 package org.easyarch.slardar.binding;
 
 import org.easyarch.slardar.annotation.entity.Column;
-import org.easyarch.slardar.annotation.entity.Table;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -25,18 +24,23 @@ public class FieldBinder<T> {
         init();
     }
 
+    /**
+     * 初始化的时候只根据是不是标准实体来初始化（即有没有注解）
+     */
     private void init(){
-        if (cls.getAnnotation(Table.class) == null){
-            return;
-        }
         if (fieldMapper.containsKey(cls)){
             return;
         }
         Field[] fields = cls.getDeclaredFields();
         Map<String,String> mapper = new HashMap<>();
         for (Field field : fields){
+            field.setAccessible(true);
             Column column = field.getAnnotation(Column.class);
-            mapper.put(column.name(),field.getName());
+            if (column == null){
+                mapper.put(field.getName(),field.getName());
+            }else{
+                mapper.put(column.name(),field.getName());
+            }
         }
         fieldMapper.put(cls,mapper);
     }

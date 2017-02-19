@@ -16,7 +16,7 @@ public class BeanMapUtils {
     public static <T> T getBean(Map<String,Object> map, Class<T> cls){
         T bean = (T) ReflectUtils.newInstance(cls);
         for (Map.Entry<String,Object> entry:map.entrySet()){
-            ReflectUtils.setter(bean,entry.getKey(),entry.getKey());
+            ReflectUtils.setFieldValue(bean,entry.getKey(),entry.getValue());
         }
         return bean;
     }

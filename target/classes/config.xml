@@ -4,7 +4,7 @@
 
     <mapper location="classpath:mapper/" />
 
-    <cache enable="true"
+    <cache enable="false"
            mode="lru"
            size="128"/>
 
