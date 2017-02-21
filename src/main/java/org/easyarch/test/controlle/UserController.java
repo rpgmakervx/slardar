@@ -8,7 +8,6 @@ import org.easyarch.slardar.jdbc.pool.DBCPoolFactory;
 import org.easyarch.slardar.utils.ResourcesUtil;
 import org.easyarch.test.JDBCUtil;
 import org.easyarch.test.pojo.User;
-import org.easyarch.test.service.UserService;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -67,7 +66,7 @@ public class UserController {
 //        long end1 = System.nanoTime();
 //        System.out.println("jade use:"+(end1- begin1));
 
-        UserService service = new UserService();
+        org.easyarch.test.service.UserService service = new org.easyarch.test.service.UserService();
 //        System.out.println(service.getUser("ewrgthgdsvng"));;
         User user = new User();
         user.setClientId("8d9avt5d6h51w3p0n");
@@ -141,7 +140,7 @@ public class UserController {
      */
     @Test
     public void slardar(){
-        UserService service = new UserService();
+        org.easyarch.test.service.UserService service = new org.easyarch.test.service.UserService();
         long begin1 = System.currentTimeMillis();
         for (int index = 0;index<7000;index++){
             service.getUser("ewrgthgdsvng");
@@ -157,7 +156,7 @@ public class UserController {
      */
     @Test
     public void slardarOne(){
-        UserService service = new UserService();
+        org.easyarch.test.service.UserService service = new org.easyarch.test.service.UserService();
         service.getUser("ewrgthgdsvng");
         long begin1 = System.currentTimeMillis();
         service.getUser("ewrgthgdsvng");

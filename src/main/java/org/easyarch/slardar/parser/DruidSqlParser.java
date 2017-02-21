@@ -116,7 +116,6 @@ public class DruidSqlParser extends ParserAdapter {
     }
 
     public void handleWhereCause(SQLExpr whereAfter, List<String> paramNames){
-        System.out.println("expr type:"+whereAfter.getClass().getName());
         if (whereAfter instanceof SQLIdentifierExpr){
             return;
         }
