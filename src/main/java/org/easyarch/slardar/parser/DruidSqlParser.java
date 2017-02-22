@@ -23,7 +23,7 @@ import static org.easyarch.slardar.parser.Token.*;
  * description:
  */
 
-public class DruidSqlParser extends ParserAdapter {
+public class DruidSqlParser extends ParserAdapter<String> {
 
     private MySqlStatementParser statementParser;
 

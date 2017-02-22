@@ -38,7 +38,6 @@ public class JSParser extends ParserAdapter<SqlEntity> {
 
     private JSContext ctx;
 
-    private Configuration configuration;
 
     private static Map<String,SqlEntity> sqlValues = new HashMap<>();
     private static Map<String,ScriptEngine> jsFunctions = new HashMap<>();
@@ -46,7 +45,6 @@ public class JSParser extends ParserAdapter<SqlEntity> {
     public JSParser(Reader reader,Configuration configuration){
         engineManager = new ScriptEngineManager();
         this.sqlBuilder = new SqlBuilder();
-        this.configuration = configuration;
         this.reader = reader;
         ctx = new JSContext();
         cache = SqlMapCacheFactory.getInstance().createCache(
