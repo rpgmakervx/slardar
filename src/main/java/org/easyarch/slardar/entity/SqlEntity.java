@@ -94,4 +94,12 @@ public class SqlEntity {
         String[] segements = binder.split(BIND_SEPARATOR);
         return segements[1];
     }
+
+    @Override
+    public String toString() {
+        return "SqlEntity{" +
+                "params=" + params +
+                ", binder='" + binder + '\'' +
+                '}';
+    }
 }

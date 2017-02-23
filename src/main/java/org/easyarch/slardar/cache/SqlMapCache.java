@@ -31,20 +31,6 @@ public class SqlMapCache implements Cache<String,SqlEntity> {
 //    }
 
     public SqlEntity getSqlEntity(String namespace, String id,Object[] params){
-//        String namespaceHash = hashBinder(namespace);
-//        String idHash = hashBinder(id);
-//        String paramHash = hashParams(params);
-//        Map<String, Map<String, SqlEntity>> idParamStatement = get(namespaceHash);
-//        if(idParamStatement == null){
-//            return new SqlEntity();
-//        }else{
-//            Map<String, SqlEntity> paramStatment = idParamStatement.get(idHash);
-//            if (paramStatment != null){
-//                return paramStatment.get(paramHash);
-//            }else{
-//                return new SqlEntity();
-//            }
-//        }
         String key = hashEntity(namespace,id,params);
         return get(key);
     }

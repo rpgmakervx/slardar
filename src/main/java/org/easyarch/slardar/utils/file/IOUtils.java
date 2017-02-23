@@ -1,8 +1,10 @@
-package org.easyarch.slardar.utils;/**
+package org.easyarch.slardar.utils.file;/**
  * Description : 
  * Created by YangZH on 16-10-28
  *  上午10:03
  */
+
+import org.easyarch.slardar.utils.CodecUtils;
 
 import java.io.*;
 import java.nio.ByteBuffer;

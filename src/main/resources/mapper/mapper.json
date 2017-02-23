@@ -1,0 +1,30 @@
+{
+    "org.easyarch.test.dao.UserMapper":{
+        "findByUser":
+            "
+                select * from user where 1 = 1
+                <#if username??>
+                    and username = $username
+                </#if>
+                <#if phone??>
+                    and phone = $phone
+                </#if>
+            "
+        ,
+        "findById":"select * from user where client_id = $id",
+        "findByQuery":
+            "
+                select * from user where 1 = 1
+                <#if username??>
+                    and username = ?
+                </#if>
+                <#if phone??>
+                    and phone = ?
+                </#if>
+                <#if client_id??>
+                    and client_id = ?
+                </#if>
+                limit $pageIndex,$pageSize
+            "
+    }
+}

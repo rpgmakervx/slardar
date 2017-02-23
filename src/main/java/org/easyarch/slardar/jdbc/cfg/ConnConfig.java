@@ -1,6 +1,6 @@
 package org.easyarch.slardar.jdbc.cfg;
 
-import org.easyarch.slardar.utils.IOUtils;
+import org.easyarch.slardar.utils.file.IOUtils;
 
 import java.io.FileInputStream;
 import java.io.IOException;

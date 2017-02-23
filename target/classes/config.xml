@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <configuration>
-    <interface package="org.easyarch.test.slardartest.dao" />
+    <interface package="org.easyarch.test.dao" />
 
     <mapper location="classpath:mapper/" />
 

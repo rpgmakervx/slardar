@@ -55,6 +55,9 @@ public class DruidSqlParser extends ParserAdapter<String> {
             deleteCase((SQLDeleteStatement) statement);
         }
         for (String param: paramNames){
+            if (!param.contains(KEY)){
+                param = KEY + param;
+            }
             preparedSql = preparedSql.replace(param,PLACEHOLDER);
         }
         List<String> paramNames = new ArrayList<>();

@@ -1,7 +1,7 @@
 package org.easyarch.test.sharding.algorithm;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.SingleKeyDatabaseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.table.SingleKeyTableShardingAlgorithm;
 import com.google.common.collect.Range;
 
 import java.util.Collection;
@@ -9,15 +9,14 @@ import java.util.LinkedHashSet;
 
 /**
  * Description :
- * Created by xingtianyu on 17-2-22
- * 上午1:22
+ * Created by xingtianyu on 17-2-21
+ * 下午8:47
  * description:
  */
 
-public class ModuloDatabaseShardingAlgorithm implements SingleKeyDatabaseShardingAlgorithm<Integer> {
+public class ModuloTableShardingAlgorithm implements SingleKeyTableShardingAlgorithm<Integer> {
     @Override
     public String doEqualSharding(final Collection<String> dataSourceNames, final ShardingValue<Integer> shardingValue) {
-        System.out.println("datasource:"+dataSourceNames+" , ShardingValue:"+shardingValue);
         for (String each : dataSourceNames) {
             if (each.endsWith(shardingValue.getValue() % 2 + "")) {
                 return each;

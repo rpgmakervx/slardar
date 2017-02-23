@@ -153,14 +153,17 @@ public class UserController {
      * jsqlparser:1 276 893 963(nano)
      * druid:1 289 766 447
      *
+     * template js  :
+     * template json:410 973 959
+     *
      */
     @Test
     public void slardarOne(){
         org.easyarch.test.service.UserService service = new org.easyarch.test.service.UserService();
+//        service.getUser("ewrgthgdsvng");
+        long begin1 = System.nanoTime();
         service.getUser("ewrgthgdsvng");
-        long begin1 = System.currentTimeMillis();
-        service.getUser("ewrgthgdsvng");
-        long end1 = System.currentTimeMillis();
+        long end1 = System.nanoTime();
         System.out.println("slardar use:"+(end1- begin1));
     }
 

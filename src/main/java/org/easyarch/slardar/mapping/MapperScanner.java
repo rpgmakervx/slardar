@@ -4,7 +4,7 @@ import org.easyarch.slardar.annotation.sql.Mapper;
 import org.easyarch.slardar.cache.InterfaceCache;
 import org.easyarch.slardar.cache.factory.InterfaceCacheFactory;
 import org.easyarch.slardar.session.Configuration;
-import org.easyarch.slardar.utils.FileUtils;
+import org.easyarch.slardar.utils.file.FileUtils;
 import org.easyarch.slardar.utils.ResourcesUtil;
 
 import java.io.File;

@@ -10,6 +10,7 @@ ctx.namespace = "org.easyarch.test.dao.UserMapper";
 function findById(params){
     return "select * from user where client_id = $id";
 }
+
 function getCount(params){
     var sql = "select count(1) from user" + ctx.where;
     if (params.client_id != undefined){

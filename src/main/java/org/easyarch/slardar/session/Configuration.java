@@ -1,7 +1,9 @@
 package org.easyarch.slardar.session;
 
 import org.easyarch.slardar.cache.SqlMapCache;
+import org.easyarch.slardar.cache.TemplateCache;
 import org.easyarch.slardar.cache.factory.SqlMapCacheFactory;
+import org.easyarch.slardar.cache.factory.TemplateCacheFactory;
 import org.easyarch.slardar.cache.mode.CacheMode;
 import org.easyarch.slardar.entity.CacheEntity;
 import org.easyarch.slardar.entity.SqlEntity;
@@ -12,6 +14,7 @@ import org.easyarch.slardar.jdbc.pool.DBCPoolFactory;
 import org.easyarch.slardar.mapping.MapperScanner;
 import org.easyarch.slardar.parser.JSParser;
 import org.easyarch.slardar.utils.*;
+import org.easyarch.slardar.utils.file.FileUtils;
 
 import javax.sql.DataSource;
 import java.io.*;
@@ -33,7 +36,7 @@ public class Configuration {
     public static final String LOCATION = "location";
     public static final String DATASOURCECLASS = "class";
     public static final String DATASOURCE = "datasource";
-    public static final String CACHE = "cache";
+    public static final String CACHE = "sqlMapCache";
     public static final String ENABLE = "enable";
     public static final String MODE = "mode";
     public static final String SIZE = "size";
@@ -44,25 +47,33 @@ public class Configuration {
 
     public static final String CLASSPATH = "classpath:";
     public static final String JS = ".js";
+    public static final String JSON = ".json";
 
     private volatile Map<String, Map<String, String>> mappedSqls = new HashMap<>();
 
     private volatile Map<String,Object> configMap;
 
+    //配置文件所在路径
     private String configFilePath;
 
     private DataSource dataSource;
 
     private List<Reader> sqlMapperReaders;
-    private SqlMapCache cache;
+    private List<File> sqlMapperFiles;
+    private SqlMapCache sqlMapCache;
+    private TemplateCache templateCache;
     public Configuration(String configPath,Map<String,Object> content) {
         this.configFilePath = configPath;
         this.configMap = content;
-        this.cache = SqlMapCacheFactory.getInstance()
+        this.sqlMapCache = SqlMapCacheFactory.getInstance()
+                .createCache(getCacheEntity());
+        this.templateCache = TemplateCacheFactory.getInstance()
                 .createCache(getCacheEntity());
         sqlMapperReaders = new ArrayList<>();
+        sqlMapperFiles = new ArrayList<>();
         initMapper();
         initDataSource();
+        initMapperTemplate();
     }
 
     /**
@@ -82,50 +93,55 @@ public class Configuration {
                 return;
             }
             File baseDir = new File(basePath);
+            List<File> mapperFiles = null;
             if (basePath.startsWith(CLASSPATH)){
                 //去掉classpath:关键字
                 basePath = basePath.replace(CLASSPATH,"");
                 //连接classpath目录和用户输入目录
                 basePath = ResourcesUtil.getResources(basePath);
                 //遍历相对路径下的所有目录中的文件
-                List<File> mapperFiles = FileUtils.listFileRecursive(basePath);
+                mapperFiles = FileUtils.listFileRecursive(basePath);
                 for (File file : mapperFiles){
                     String filename = file.getPath();
-                    if (!filename.endsWith(JS)){
+                    if (!filename.endsWith(JS)&&!filename.endsWith(JSON)){
                         continue;
                     }
+                    System.out.println("config filename:"+filename);
                     //获得具体文件在classpath下的相对路径
                     String relativePath = filename.substring(MapperScanner.CLASSPATH.length(),filename.length());
                     Reader reader = new InputStreamReader(
                             getClass().getClassLoader().getResourceAsStream(relativePath));
-                    sqlMapperReaders.add(reader);
-                }
-            }else if(baseDir.isAbsolute()){
-                List<File> mapperFiles = FileUtils.listFileRecursive(baseDir);
-                for (File file:mapperFiles){
-                    if (!file.getPath().endsWith(JS)){
+                    if (filename.endsWith(JS)){
+                        sqlMapperReaders.add(reader);
                         continue;
+                    }else if (filename.endsWith(JSON)){
+                        sqlMapperFiles.add(file);
                     }
-                    FileReader reader = new FileReader(file);
-                    sqlMapperReaders.add(reader);
                 }
+                return ;
+            }else if(baseDir.isAbsolute()){
+                mapperFiles = FileUtils.listFileRecursive(baseDir);
             }else{
                 //prefixPath 就是最底层目录路径
                 String prefixPath = FileUtils.getBottomDir(configFilePath);
                 basePath = prefixPath + basePath;
-                List<File> mapperFiles = FileUtils.listFileRecursive(basePath);
-                for (File file:mapperFiles){
-                    if (!file.getPath().endsWith(JS)){
-                        continue;
-                    }
-                    FileReader reader = new FileReader(file);
+                mapperFiles = FileUtils.listFileRecursive(basePath);
+            }
+            for (File file:mapperFiles){
+                if (!file.getPath().endsWith(JS)&&!file.getPath().endsWith(JSON)){
+                    continue;
+                }
+                FileReader reader = new FileReader(file);
+                if (file.getName().endsWith(JS)){
                     sqlMapperReaders.add(reader);
+                    continue;
+                }else if (file.getName().endsWith(JSON)){
+                    sqlMapperFiles.add(file);
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     /**
@@ -174,6 +190,21 @@ public class Configuration {
         this.dataSource = DBCPoolFactory.newConfigedDBCPool(prop);
     }
 
+    private void initMapperTemplate(){
+        for (File file:sqlMapperFiles){
+            try {
+                String content = FileUtils.cat(file);
+                Map<String,Object> jsonMap = JsonUtils.json2Map(content);
+                for (String namespace:jsonMap.keySet()){
+                    templateCache.set(namespace,content);
+                    break;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public String getPacakge(){
         Map<String,Object> pkg = (Map<String, Object>) configMap.get(INTERFACE);
         if (pkg == null){
@@ -203,8 +234,8 @@ public class Configuration {
     }
 
     public String getMappedSql(String namespace, String id,Object ... params) {
-        if (cache.isHit(namespace,id,params)) {
-            return cache.getSqlEntity(namespace,id,params).getPreparedSql();
+        if (sqlMapCache.isHit(namespace,id,params)) {
+            return sqlMapCache.getSqlEntity(namespace,id,params).getPreparedSql();
         }
         return "";
     }
@@ -217,7 +248,7 @@ public class Configuration {
      * @return
      */
     public SqlEntity getMappedSql(String namespace, String id,Collection params) {
-        return cache.getSqlEntity(namespace,id,params);
+        return sqlMapCache.getSqlEntity(namespace,id,params.toArray());
     }
 
     /**
@@ -225,10 +256,13 @@ public class Configuration {
      * @param sqlEntity
      */
     public void parseMappedSql(SqlEntity sqlEntity){
-        if (cache.isHit(sqlEntity.getPrefix()
+        if (sqlMapCache.isHit(sqlEntity.getPrefix()
                 ,sqlEntity.getSuffix(),sqlEntity.getParams().values())){
             return ;
         }
+//        String content = templateCache.get(sqlEntity.getPrefix());
+//        TemplateParser parser = new TemplateParser(content,this);
+//        parser.parse(sqlEntity);
         for (Reader reader:sqlMapperReaders){
             JSParser parser = new JSParser(reader,this);
             parser.parse(sqlEntity);

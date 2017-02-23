@@ -1,14 +1,15 @@
 package org.easyarch.test.sharding;
 
-import com.dangdang.ddframe.rdb.sharding.api.MasterSlaveDataSourceFactory;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.easyarch.test.sharding.algorithm.ModuloDatabaseShardingAlgorithm;
+import org.easyarch.test.sharding.algorithm.ModuloTableShardingAlgorithm;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -31,21 +32,25 @@ public class ShardingTest {
 
     private static ShardingDataSource getShardingDataSource() {
         DataSourceRule dataSourceRule = new DataSourceRule(createDataSourceMap());
-        TableRule orderTableRule = TableRule.builder("t_order").actualTables(Arrays.asList("t_order_0", "t_order_1")).dataSourceRule(dataSourceRule).build();
-        TableRule orderItemTableRule = TableRule.builder("t_order_item").actualTables(Arrays.asList("t_order_item_0", "t_order_item_1")).dataSourceRule(dataSourceRule).build();
+        TableRule orderTableRule = TableRule.builder("t_order").actualTables(Arrays.asList(
+                "db0.t_order_0", "db0.t_order_1",
+                "db1.t_order_0", "db1.t_order_1"
+        )).dataSourceRule(dataSourceRule).build();
+        TableRule orderItemTableRule = TableRule.builder("t_order_item").actualTables(Arrays.asList(
+                "db0.t_order_item_0", "db0.t_order_item_1",
+                "db1.t_order_item_0", "db1.t_order_item_1"
+        )).dataSourceRule(dataSourceRule).build();
         ShardingRule shardingRule = ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
                 .bindingTableRules(Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))))
-//                .databaseShardingStrategy(new DatabaseShardingStrategy("user_id", new ModuloDatabaseShardingAlgorithm()))
-                .tableShardingStrategy(new TableShardingStrategy("order_id", new ModuloDatabaseShardingAlgorithm())).build();
+                .databaseShardingStrategy(new DatabaseShardingStrategy("user_id", new ModuloDatabaseShardingAlgorithm()))
+                .tableShardingStrategy(new TableShardingStrategy("order_id", new ModuloTableShardingAlgorithm())).build();
         return new ShardingDataSource(shardingRule);
     }
 
     private static Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new HashMap<>(2);
-        result.put("ds", MasterSlaveDataSourceFactory.createDataSource("ds",
-                createDataSource("127.0.0.1", 3306, "ds_master"),
-                createDataSource("127.0.0.1", 3306, "ds_slave_0"),
-                createDataSource("127.0.0.1", 3306, "ds_slave_1")));
+        result.put("db0", createDataSource("127.0.0.1", 3306, "db0"));
+        result.put("db1", createDataSource("127.0.0.1", 3306, "db1"));
         return result;
     }
 
@@ -58,8 +63,7 @@ public class ShardingTest {
         return result;
     }
 
-    private static void printSimpleSelect(final DataSource dataSource, final Integer userId, final Integer orderId) throws SQLException {
-        System.out.println("select");
+    private static void printSimpleSelect(final DataSource dataSource, final Integer userId, final Integer orderId) {
         String sql = "SELECT i.*,o.status FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
         Connection conn = null;
         ResultSet rs = null;
@@ -68,6 +72,7 @@ public class ShardingTest {
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setInt(1, userId);
             preparedStatement.setInt(2, orderId);
+            System.out.println("select");
             rs = preparedStatement.executeQuery();
             while (rs.next()) {
                 System.out.println("data: "+rs.getInt(1) + "\t" + rs.getInt(2) + "\t" + rs.getInt(3) + "\t" + rs.getString(4));
@@ -75,8 +80,14 @@ public class ShardingTest {
         }catch (SQLException e){
             e.printStackTrace();
         } finally {
-            rs.close();
-            conn.close();
+            try {
+                if (rs != null)
+                    rs.close();
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -84,7 +95,7 @@ public class ShardingTest {
         DataSource dataSource = getShardingDataSource();
         printSimpleSelect(dataSource, 10, 1001);
         printSimpleSelect(dataSource, 10, 1002);
-        printSimpleSelect(dataSource, 10, 1003);
+        printSimpleSelect(dataSource, 11, 1003);
         printSimpleSelect(dataSource, 10, 1004);
     }
 

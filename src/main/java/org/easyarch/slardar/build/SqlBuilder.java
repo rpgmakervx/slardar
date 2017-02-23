@@ -71,7 +71,6 @@ public class SqlBuilder {
         entity.clear();
         for (String name:paramNames){
             for (Map.Entry<String,Object> entry:mapper.entrySet()){
-//                System.out.println("name:"+name+",getKey:"+entry.getKey());
                 if (entry.getKey().equals(name)){
                     entity.addParam(name,entry.getValue());
                 }
@@ -89,6 +88,7 @@ public class SqlBuilder {
         buildSql(entity.getSql());
         buildParams(entity.getParams());
         buildParams();
+        buildEntity(entity.getBinder());
         return this.entity;
     }
 
