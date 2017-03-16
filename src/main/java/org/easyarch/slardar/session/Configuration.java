@@ -221,23 +221,12 @@ public class Configuration {
         return String.valueOf(mapper.get(LOCATION));
     }
 
-    public List<Reader> getSqlMapperReaders(){
-        return sqlMapperReaders;
-    }
-
     /**
      * 支持其他第三方连接池（配置文件信息和本框架不同）
      * @return
      */
     public DataSource getDataSource(){
         return this.dataSource;
-    }
-
-    public String getMappedSql(String namespace, String id,Object ... params) {
-        if (sqlMapCache.isHit(namespace,id,params)) {
-            return sqlMapCache.getSqlEntity(namespace,id,params).getPreparedSql();
-        }
-        return "";
     }
 
     /**
@@ -267,21 +256,6 @@ public class Configuration {
             JSParser parser = new JSParser(reader,this);
             parser.parse(sqlEntity);
         }
-    }
-
-    private boolean containsSql(String namespace,String id){
-        Map<String,String> mapper = mappedSqls.get(namespace);
-        if (mapper == null){
-            return false;
-        }
-        return mapper.containsKey(id);
-    }
-
-    private String hashEntity(SqlEntity entity){
-        StringBuffer keyBuffer = new StringBuffer();
-        keyBuffer.append(CodecUtils.sha1(entity.getPrefix()))
-                .append(CodecUtils.sha1Obj(entity.getParams()));
-        return CodecUtils.sha1(keyBuffer.toString());
     }
 
     private boolean enableCache(){

@@ -66,10 +66,6 @@ public class UserService {
         mapper.insert(user);
     }
     public void insertUser(User user){
-//        Parameter p1 = new Parameter("clientId",user.getClientId());
-//        Parameter p2 = new Parameter("userName",user.getUserName());
-//        Parameter p3 = new Parameter("password",user.getPassword());
-//        Parameter p4 = new Parameter("phone",user.getPhone());
         defaultSession.insert(UserMapper.class.getName()+"@"+"insert", ParamUtil.create(user));
     }
 

@@ -1,9 +1,11 @@
 <?xml version="1.0"?>
 <configuration>
+    <!--不写该配置则不进行加载，package写*或不填内容则默认扫描整个工程-->
     <interface package="org.easyarch.test.dao" />
 
+    <!--不写该配置则不进行加载-->
     <mapper location="classpath:mapper/" />
-
+    <!--lru,fifo,timeout-->
     <cache enable="false"
            mode="lru"
            size="128"/>
@@ -14,7 +16,6 @@
         <property name="password" value="123456" />
         <property name="url" value="jdbc:mysql://localhost:3306/shopping?useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=false" />
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-
         <property name="maxActive" value="100" />
         <property name="minIdle" value="10" />
         <property name="initialSize" value="40" />
